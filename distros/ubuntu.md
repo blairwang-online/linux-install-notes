@@ -303,8 +303,14 @@ Great resource for finding where these desktop launchers live: https://askubuntu
 
 ### Apple Keyboard
 
-Fn mode:
+The following will give you a setup equivalent to a Windows keyboard with the Ctrl-Fn-Win-Alt layout:
 
+```bash
+echo 1 | sudo tee /sys/module/hid_apple/parameters/swap_fn_leftctrl
+echo 1 | sudo tee /sys/module/hid_apple/parameters/swap_opt_cmd
+```
+
+The following will set Fn lock (since there is no option on the keyboard itself):
 
 ```bash
 echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode
