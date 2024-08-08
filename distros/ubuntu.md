@@ -68,6 +68,46 @@ Manual installations:
 - **Zed:** https://zed.dev/download
 
 
+
+### LAMP server
+
+First, install the vital components:
+
+```bash
+sudo apt update
+sudo apt install apache2 libapache2-mod-php php php-bcmath php-curl php-imagick php-intl php-json php-mbstring php-mysql php-xml php-zip
+
+sudo systemctl start apache2
+sudo systemctl enable apache2
+sudo systemctl status apache2
+
+sudo apt install mariadb-server
+sudo systemctl status mysql
+sudo mysql_secure_installation
+```
+
+(Loosely adapted from https://ubuntu.com/tutorials/install-and-configure-wordpress but uses mariadb instead of mysql.)
+
+Next, install phpmyadmin:
+
+```bash
+sudo apt-get install phpmyadmin
+```
+
+Configuring phpmyadmin:
+
+- Web server to reconfigure automatically: `apache2`
+- Configure database for phpmyadmin with dbconfig-common? `Yes`
+- Please provide a password for phpmyadmin to register with the database server: _(generate one yourself, save it in your password manager)_
+
+Configuring PHP:
+
+1. Do the phpinfo thing, find out where php.ini is
+2. Open php.ini for editing as root
+3. Update `upload_max_filesize = 2M`, maybe `2G`?
+4. Update `post_max_size = 8M`, maybe `8G`?
+
+
 ## Software Configurations
 
 ### Enable Cockpit
@@ -196,11 +236,63 @@ Other recommended extensions:
 - Some configurations (e.g., right margin shaded area) are on a per-language basis
 - Go to Preferences (Ctrl+,) then **Programming Languages**, select the language you want to configure (e.g., Markdown).
 
+
+### GNOME Resize anywhere
+
+By default you can resize anywhere in the window by pressing down the Windows (Super / Command) key and using the middle mouse button.
+However, on laptops you may not have access to the middle mouse button.
+This can be remedied by changing the setting to use the right mouse (trackpad) button instead.
+
+```
+~
+❯ gsettings get org.gnome.desktop.wm.preferences resize-with-right-button
+false
+
+~
+❯ gsettings set org.gnome.desktop.wm.preferences resize-with-right-button true
+
+~
+❯ gsettings get org.gnome.desktop.wm.preferences resize-with-right-button     
+true
+```
+
+As per https://askubuntu.com/a/1239668
+
+
+### LibreOffice
+
+1. Close all LibreOffice running programs (Writer, Calc, etc.)
+2. `sudo apt install hunspell-en-au hunspell-en-ca hunspell-en-gb`
+3. Open LibreOffice Writer, go to **Tools &rarr; Options &rarr; Languages and Locales &rarr; General**. Set **Locale setting** to, e.g., `English (Australia)`.
+4. Now go to **Tools &rarr; Options &rarr; Languages and Locales &rarr; Writing Aids**. In the "Available Language Modules" box, click on **Hunspell SpellChecker**, then click **Edit**. Select the relevant language and confirm that **Hunspell SpellChecker** is available and checked (ticked).
+
+### TypeScript
+
+```bash
+sudo npm install -g typescript
+```
+
 ### VSCodium
 
 - Complete tasks as per [configure-vsc.md](../tasks/configure-vsc.md)
 
 ## Hardware Support
+
+### Hidpi screens
+
+Add `--ozone-platform=wayland` to the following:
+
+- `sudo nano /var/lib/snapd/desktop/applications/chromium_chromium.desktop` (use Ctrl+W and search for `Exec=`, could be around 4 instances!)
+- `sudo nano /var/lib/snapd/desktop/applications/spotify_spotify.desktop`
+- `sudo nano /usr/share/applications/ferdium.desktop`
+- `sudo nano /usr/share/applications/codium.desktop`
+
+NOTE: It might not work immediately. You might find that you need to launch the application, it is still blurry, then you close it (Alt+F4) and then launch it up again from the launcher, the second time around it should be nice and crispy!
+
+With many thanks to [modzilla99](https://github.com/modzilla99) for the tip over at https://github.com/microsoft/vscode/issues/135492#issuecomment-961762593
+
+Great resource for finding where these desktop launchers live: https://askubuntu.com/a/1144568
+
 
 ### Logitech MX Anywhere mouse
 
