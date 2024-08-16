@@ -41,7 +41,7 @@ sudo apt-get install -y aria2 bat btop git-lfs lm-sensors jq libreoffice lolcat 
 ### Workstation only
 
 ```bash
-sudo apt-get install -y audacity cheese dconf-editor ddcutil geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-calendar gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather nautilus-dropbox nautilus-nextcloud obs-studio pasaffe pavucontrol python3.12-venv synaptic ttf-mscorefonts-installer syncthing tree vlc
+sudo apt-get install -y audacity cheese dconf-editor ddcutil geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-calendar gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe pavucontrol python3.12-venv synaptic ttf-mscorefonts-installer syncthing tree vlc
 
 # Snaps where the apt/deb version is problematic or unavailable
 sudo snap install 0ad chromium emote
@@ -51,6 +51,9 @@ Fonts:
 
 ```bash
 sudo apt-get install fonts-clear-sans fonts-comic-neue fonts-courier-prime fonts-inconsolata fonts-inter fonts-open-sans fonts-ricty-diminished fonts-roboto
+
+# Do not use because outdated
+# sudo apt install fonts-ebgaramond fonts-ebgaramond-extra
 ```
 
 Manual installations:
@@ -109,6 +112,10 @@ Configuring PHP:
 
 
 ## Software Configurations
+
+### If you need Docker
+
+Follow instructions at https://docs.docker.com/engine/install/ubuntu/
 
 ### Enable Cockpit
 
@@ -276,9 +283,124 @@ sudo npm install -g typescript
 
 - Complete tasks as per [configure-vsc.md](../tasks/configure-vsc.md)
 
+
+## Artificial Intelligence
+
+### Ollama
+
+**Installing**
+
+Use the script method at https://ollama.com/download/linux
+
+After installation, check localhost:11434 to see if ollama is running, you can also run `sudo systemctl status ollama` if you're curious. But then you should probably `sudo systemctl disable ollama` and `sudo systemctl stop ollama` so that it only runs when you need it. Unless this is a server.
+
+To install a model, go to https://ollama.com/library and browse for a model you like, e.g., `llama3.1`, then you can run in the terminal:
+
+```bash
+ollama pull llama3.1
+```
+
+For a nice web UI:
+
+```bash
+python3.11 -m pipx install open-webui
+open-webui serve
+```
+
+**Starting up**
+
+```bash
+sudo systemctl start ollama
+open-webui serve
+```
+
+### Reor
+
+Download the latest AppImage at https://github.com/reorproject/reor/releases/tag/v0.2.18
+
+Try to run as normal but if you get an error like "Rather than run without sandboxing I'm aborting now." then try this:
+
+```bash
+./Reor_0.2.18.AppImage --no-sandbox
+```
+
+Reor seems to automatically pick up the Ollama models in `/usr/share/ollama/.ollama/models/`.
+
+### aTrain
+
+First you will need to `sudo apt install ffmpeg python3.11 python3.11-venv`
+
+You can then follow the rest of the "Debian" instructions:
+
+```bash
+# Go to the folder you want to setup ATrain in
+python3.11 -m venv atrain_venv
+source atrain_venv/bin/activate
+
+# Check venv in use
+which python
+
+# Update pip
+python -m pip install --upgrade pip
+
+# Install aTrain
+python -m pip install aTrain@git+https://github.com/BANDAS-Center/aTrain.git --extra-index-url https://download.pytorch.org/whl/cu118
+
+# Next, you need aTrain to download all the necessary models for transcription and speaker detection. This has only to be done once when installing it.
+aTrain init
+
+# You are now ready to start aTrain. The following command should open a webrowser window with the user interface.
+aTrain start
+```
+
+(From https://github.com/JuergenFleiss/aTrain/wiki/Linux-Support but adapted for Ubuntu here)
+
+
+### Stable Diffusion
+
+```bash
+# Helps with memory I'm told
+sudo apt install libtcmalloc-minimal4t64
+
+# Install
+git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
+cd stable-diffusion-webui
+python3.11 -m venv .venv
+source ./.venv/bin/activate
+python -m pip install --upgrade pip wheel
+python -m pip install -r requirements.txt
+
+# Run cf. https://github.com/openvinotoolkit/stable-diffusion-webui/wiki/Installation-on-Intel-Silicon
+export PYTORCH_TRACING_MODE=TORCHFX && export COMMANDLINE_ARGS="--skip-torch-cuda-test --precision full --no-half" && export python_cmd="python3.11" && ./webui.sh
+```
+
 ## Hardware Support
 
-### Hidpi screens
+### Logitech G203 Lightsync
+
+Simply use Piper:
+
+`sudo apt-get install piper`
+
+Don't forget to click **Apply!**
+
+For a warm white, I find that `#ffffc8` (= RGB 255, 255, 0) is quite nice.
+
+<!--
+
+Previously I used OpenRGB. That also works, but Piper is better.
+
+This mouse works very nicely with OpenRGB.
+
+1. Run `sudo apt install libfuse-dev` so that you can run AppImages.
+	- WARNING: Do NOT install `fuse`, it will [break your system](https://askubuntu.com/questions/1409496/how-to-safely-install-fuse-on-ubuntu-22-04).
+2. Go to https://openrgb.org/releases.html and get the **AppImage**.
+3. Run `chmod +x` on the AppImage.
+4. Run the AppImage. You may be prompted to install udev rules over at https://openrgb.org/udev - if so then go ahead.
+
+-->
+
+### Hidpi ('retina') screens
 
 Add `--ozone-platform=wayland` to the following:
 
@@ -365,4 +487,42 @@ uint32 5000
 ```
 
 From https://askubuntu.com/a/1215995
+
+### Fix cups-browsed taking up disproportionately high CPU usage
+
+The `cups-browsed` service provides network printer detection. But using `btop` you may diagnose it to be using the most CPU time of all running programs!
+
+You can verify using `systemctl` that the CPU time is huge (> 1 hour). In comparison some other services' CPU usage is measured in seconds or even just ms.
+
+```
+❯ sudo systemctl status cups-browsed 
+● cups-browsed.service - Make remote CUPS printers available locally
+     Loaded: loaded (/usr/lib/systemd/system/cups-browsed.service; enabled; preset: enabled)
+     Active: deactivating (stop-sigterm) since Wed 2024-08-14 01:46:23 IST; 38s ago
+   Main PID: 631100 (cups-browsed)
+      Tasks: 6 (limit: 76695)
+     Memory: 4.9M (peak: 5.5M)
+        CPU: 1h 46min 47.776s
+     CGroup: /system.slice/cups-browsed.service
+             └─631100 /usr/sbin/cups-browsed
+```
+
+This is a known issue: https://bugs.launchpad.net/ubuntu/+source/cups-browsed/+bug/2018504
+
+As a provisional workaround, `sudo systemctl disable cups-browsed` (it is enabled by default).
+
+We can re-enable it if we need network printing services, and/or if they fix the bug.
+
+### Not able to launch GDM / GNOME Desktop
+
+This could happen for example if you accidentally installed `fuse` and it removed Ubuntu Desktop.
+
+To fix:
+
+1. Ctrl + Alt + F3 and login by terminal
+2. Run `sudo apt install --reinstall ubuntu-desktop`
+3. Reboot
+
+Many thanks to https://askubuntu.com/questions/1489129/gdm-service-preventing-boot
+
 

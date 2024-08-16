@@ -205,7 +205,7 @@ sudo semanage fcontext -a -t public_content_t "/home/blair/mynetworkdrive(/.*)?"
 
 # Activate correct folder permissions
 sudo restorecon -R /home/blair/mynetworkdrive
-chcon -t samba_share_t /home/blair/mynetworkdrive
+chcon -t samba_share_t /home/blair/mynetworkdrive -R
 
 sudo setsebool -P samba_domain_controller on
 sudo setsebool -P samba_enable_home_dirs on
