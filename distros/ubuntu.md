@@ -113,6 +113,31 @@ Configuring PHP:
 
 ## Software Configurations
 
+### NTP setup
+
+```bash
+sudo nano /etc/systemd/timesyncd.conf
+```
+
+Set these;
+
+```
+NTP=0.europe.pool.ntp.org 1.europe.pool.ntp.org 2.europe.pool.ntp.org 3.europe.pool.ntp.org
+FallbackNTP=0.pool.ntp.org 1.pool.ntp.org
+```
+
+Then:
+
+```bash
+sudo systemctl daemon-reload
+sudo timedatectl set-ntp off
+sudo timedatectl set-ntp on
+
+timedatectl status
+```
+
+See https://askubuntu.com/a/1106011
+
 ### If you need Docker
 
 Follow instructions at https://docs.docker.com/engine/install/ubuntu/
