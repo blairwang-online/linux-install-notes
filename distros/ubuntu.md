@@ -41,7 +41,7 @@ sudo apt-get install -y aria2 bat btop git-lfs lm-sensors jq libreoffice lolcat 
 ### Workstation only
 
 ```bash
-sudo apt-get install -y audacity cheese dconf-editor ddcutil geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-calendar gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe pavucontrol python3.12-venv synaptic ttf-mscorefonts-installer syncthing tree vlc
+sudo apt-get install -y audacity cheese dconf-editor ddcutil exiftool geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-calendar gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe pavucontrol python3.12-venv synaptic ttf-mscorefonts-installer syncthing tree vlc
 
 # Snaps where the apt/deb version is problematic or unavailable
 sudo snap install 0ad chromium emote
@@ -307,6 +307,11 @@ sudo npm install -g typescript
 ### VSCodium
 
 - Complete tasks as per [configure-vsc.md](../tasks/configure-vsc.md)
+
+
+### Zotero
+
+- https://www.zotero.org/support/installation points to https://github.com/retorquere/zotero-deb
 
 
 ## Artificial Intelligence

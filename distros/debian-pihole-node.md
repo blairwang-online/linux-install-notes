@@ -58,7 +58,23 @@ When using Fedora Cockpit:
 
 ## Configuration Part 1 - set up networking
 
-Follow instructions at https://www.snel.com/support/how-to-configure-static-ip-on-debian-10/
+For **static IP address**, follow the instructions at https://www.snel.com/support/how-to-configure-static-ip-on-debian-10/
+
+For **DNS server**, follow the instructions at https://wiki.debian.org/NetworkConfiguration#Defining_the_.28DNS.29_Nameservers
+
+Quick reference:
+
+
+```bash
+# Static IP address
+sudo nano /etc/network/interfaces
+
+# DNS server
+sudo nano /etc/resolv.conf
+
+# Restart networking
+sudo systemctl restart networking
+```
 
 ## Configuration Part 2 - set up package manager
 
@@ -70,6 +86,10 @@ Remove the line about the cdrom.
 
 This is also where you can change the mirror (e.g., to `http://mirror.aarnet.edu.au/debian/` in Australia or `http://ftp.no.debian.org/debian/` in Northern Europe e.g., Ireland, Norway).
 
+HTTPS mirror list:
+
+- For example, ETH Zurich: `https://debian.ethz.ch/debian/`
+- Full list: https://gist.github.com/eighthave/7285154
 
 ## Configuration Part 3 - install packages as root
 
