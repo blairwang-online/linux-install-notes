@@ -1,5 +1,11 @@
 # Configure VSC
 
+## VSCode server
+
+- Go to https://github.com/coder/code-server
+- The _"Getting started"_ auto-script is pretty good
+- To enable HTTPS, edit `~/.config/code-server/config.yaml` and set `cert: true`
+
 ## Handy extensions
 
 - Catppuccin Pack
@@ -23,4 +29,7 @@ ln -s ~/00blair/gitrepos-github/linux-install-notes/config-files/dot-fonts.conf 
 
 ### Configure copy line down keybinding
 
-See https://stackoverflow.com/questions/38727047/duplicate-line-in-visual-studio-code
+- Click on the Gear icon (bottom-left corner), then **Keyboard Shortcuts**
+- Modify `copyLinesDownAction` and `copyLinesUpAction` as desired, removing any existing shortcuts using the one you want.
+
+Adapted from https://stackoverflow.com/questions/38727047/duplicate-line-in-visual-studio-code

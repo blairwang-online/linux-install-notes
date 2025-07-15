@@ -252,14 +252,19 @@ You should reboot after this point (to ensure libgtop installs properly)
 
 Recommended extensions which use libgtop:
 
-- "System Monitor" by fmuellner
+- "Astra Monitor" by Astra
 
-I found that this one causes the GNOME session to crash:
+I also considered:
 
-- "System Monitor" by elvetemedve
+- "System Monitor" by fmuellner (alright, pleasant enough)
+- "System Monitor" by elvetemedve (I found that this one causes the GNOME session to crash)
 
 Other recommended extensions:
 
+- "ArcMenu" by andrew_z
+- "Brightness control using ddcutil" by themightydeity
+- "Panel Corners" by aunetx
+- "Power Tracker" by pijuli
 - "Wiggle" by mechtifs
 
 
