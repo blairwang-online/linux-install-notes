@@ -348,3 +348,16 @@ Gnome settings. Search. Disable all search results except Settings
 Gnome extensions - https://extensions.gnome.org/extension/3193/blur-my-shell/
 
 https://extensions.gnome.org/extension/1465/desktop-icons/
+
+To run VSC at the command line, opening the current folder:
+
+```zsh
+flatpak run com.vscodium.codium $(pwd) &
+```
+
+To use LibreOffice to convert DOC/DOCX files to PDF (equivalent to using `soffice` in this way)
+
+```zsh
+flatpak run org.libreoffice.LibreOffice --convert-to pdf:writer_pdf_Export *.doc*
+```
+
