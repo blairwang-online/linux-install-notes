@@ -150,6 +150,7 @@ flatpak install flathub com.github.marhkb.Pods
 flatpak install flathub com.github.tchx84.Flatseal
 flatpak install flathub com.obsproject.Studio
 flatpak install flathub com.vscodium.codium
+flatpak install flathub io.github.flattool.Warehouse
 flatpak install flathub io.gitlab.librewolf-community
 flatpak install flathub io.github.cboxdoerfer.FSearch
 flatpak install flathub io.github.quodlibet.QuodLibet
@@ -163,6 +164,7 @@ flatpak install flathub org.kde.krita
 flatpak install flathub org.keepassxc.KeePassXC
 flatpak install flathub org.libreoffice.LibreOffice
 flatpak install flathub org.mozilla.Thunderbird
+flatpak install flathub org.scratchmark.Scratchmark
 flatpak install flathub org.pwsafe.pwsafe
 flatpak install flathub page.codeberg.libre_menu_editor.LibreMenuEditor
 flatpak install flathub page.tesk.Refine
