@@ -159,6 +159,7 @@ flatpak install flathub org.cryptomator.Cryptomator
 flatpak install flathub net.nokyan.Resources
 flatpak install flathub org.ferdium.Ferdium
 flatpak install flathub org.gimp.GIMP
+flatpak install flathub org.gnome.Epiphany
 flatpak install flathub org.gnome.World.Secrets
 flatpak install flathub org.kde.krita
 flatpak install flathub org.keepassxc.KeePassXC
