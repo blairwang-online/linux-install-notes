@@ -343,10 +343,7 @@ fc-cache -fv
 
 ## GNOME Extensions
 
-- https://extensions.gnome.org/extension/307/dash-to-dock/
-- You may also consider installing some from https://www.debugpoint.com/gnome-40-extensions/
-
-
+- Complete tasks as per [gnome-extensions.md](../tasks/gnome-extensions.md)
 
 ## GNOME prevent sleep-if-no-one-logs-in
 

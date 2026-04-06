@@ -243,29 +243,11 @@ Recommended about:config settings:
 
 ```bash
 sudo apt-get install gnome-shell-extension-manager
-
-# As per https://github.com/elvetemedve/gnome-shell-extension-system-monitor/wiki/Installation#dependencies
-sudo apt install gir1.2-gtop-2.0 libgtop2-dev
 ```
 
-You should reboot after this point (to ensure libgtop installs properly)
+Then:
 
-Recommended extensions which use libgtop:
-
-- "Astra Monitor" by Astra
-
-I also considered:
-
-- "System Monitor" by fmuellner (alright, pleasant enough)
-- "System Monitor" by elvetemedve (I found that this one causes the GNOME session to crash)
-
-Other recommended extensions:
-
-- "ArcMenu" by andrew_z
-- "Brightness control using ddcutil" by themightydeity
-- "Panel Corners" by aunetx
-- "Power Tracker" by pijuli
-- "Wiggle" by mechtifs
+- Complete tasks as per [gnome-extensions.md](../tasks/gnome-extensions.md)
 
 
 ### GNOME Builder

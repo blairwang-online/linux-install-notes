@@ -105,6 +105,8 @@ sudo mount -t cifs -o rw,credentials=/home/blair/TODO-PUT-HERE-credentials.txt,n
 
 Already installed, just run it and setup your bits.
 
+- Complete tasks as per [gnome-extensions.md](../tasks/gnome-extensions.md)
+
 ### Tweaks
 
 gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
@@ -348,9 +350,9 @@ sudo systemctl enable httpd
 
 Gnome settings. Search. Disable all search results except Settings
 
-Gnome extensions - https://extensions.gnome.org/extension/3193/blur-my-shell/
+Gnome extensions:
 
-https://extensions.gnome.org/extension/1465/desktop-icons/
+- Complete tasks as per [gnome-extensions.md](../tasks/gnome-extensions.md)
 
 To run VSC at the command line, opening the current folder:
 
