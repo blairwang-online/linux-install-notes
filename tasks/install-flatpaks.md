@@ -32,7 +32,17 @@ Note: DEB version might be installed by default on Ubuntu.
 Some of these might already be installed, natively or otherwise:
 
 ```bash
+flatpak install flathub app.devsuite.Ptyxis
+
+# On Ubuntu, run `apt-cache policy evince` first.
+# If `evince` is available on `main`,
+# then use evince (via APT), NOT papers (via Flatpak).
 flatpak install flathub org.gnome.Papers
+
+# On Ubuntu, run `apt-cache policy gnome-calendar` first.
+# If `gnome-calendar` is available on `main`,
+# then use APT to install gnome-calendar, NOT flatpak.
+flatpak install flathub org.gnome.Calendar
 ```
 
 ## If running a Podman host
