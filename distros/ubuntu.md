@@ -195,7 +195,7 @@ Some instructions use `/mnt/` instead of `/media/`. The main difference as far a
 
 ### Git / GitHub credentials saver
 
-- Complete tasks as per [git-github-credentials-saver.md](../tasks/git-github-credentials-saver.md)
+- Complete tasks as per [git-and-github-configuration.md](../tasks/git-and-github-configuration.md)
 
 ### Mozilla PPA for Firefox ESR and Thunderbird
 

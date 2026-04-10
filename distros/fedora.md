@@ -141,7 +141,7 @@ sudo firewall-cmd --reload
 
 ### Git / GitHub credentials saver
 
-- Complete tasks as per [git-github-credentials-saver.md](../tasks/git-github-credentials-saver.md)
+- Complete tasks as per [git-and-github-configuration.md](../tasks/git-and-github-configuration.md)
 
 ### Fix Monaco rendering
 

@@ -268,7 +268,7 @@ To check the properties of the Samba share, run `mount -t cifs`.
 
 ## Git / GitHub credentials saver
 
-- Complete tasks as per [git-github-credentials-saver.md](../tasks/git-github-credentials-saver.md)
+- Complete tasks as per [git-and-github-configuration.md](../tasks/git-and-github-configuration.md)
 
 ## Install Snaps
 
