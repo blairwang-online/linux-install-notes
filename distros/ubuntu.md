@@ -35,16 +35,16 @@ These notes based on **Ubuntu 24.04 LTS**.
 ### Server and workstation
 
 ```bash
-sudo apt-get install -y aria2 bat btop git-lfs lm-sensors jq libreoffice lolcat nodejs npm screen whois
+sudo apt-get install -y aria2 bat btop hyfetch lm-sensors jq lolcat nodejs npm screen whois
 ```
 
 ### Workstation only
 
 ```bash
-sudo apt-get install -y audacity cheese dconf-editor ddcutil exiftool geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-calendar gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe pavucontrol python3.12-venv synaptic ttf-mscorefonts-installer syncthing tree vlc
+sudo apt-get install -y audacity cheese dconf-editor ddcutil exiftool geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-calendar gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe synaptic syncthing tree vlc wl-clipboard
 
 # Snaps where the apt/deb version is problematic or unavailable
-sudo snap install 0ad chromium emote
+sudo snap install 0ad
 ```
 
 Fonts:
@@ -58,17 +58,11 @@ sudo apt-get install fonts-clear-sans fonts-comic-neue fonts-courier-prime fonts
 
 Manual installations:
 
-- **Brave:** From "App Center" (snaps) (yes it is available as `.deb` as well, but let's keep it simple given how infrequently we use this)
-- **fastfetch:** https://github.com/fastfetch-cli/fastfetch
-- **Ferdium (e.g., for WhatsApp):** Unfortunately the version from "App Center" (snaps) doesn't work; instead go to https://github.com/ferdium/ferdium-app/releases, download the `.deb` file, and install using `sudo dpkg -i`
-- **FSearch:** https://github.com/cboxdoerfer/fsearch?tab=readme-ov-file#download and follow instructions for Ubuntu PPA Stable
 - **Signal:** https://signal.org/download/linux/
-- **Spotify:** https://www.spotify.com/de-en/download/linux/ (use the "Snap" method; the `.deb` method doesn't allow login unfortunately)
+- **Spotify:** https://www.spotify.com/de-en/download/linux/ (use the DEB method, unless you really like snaps)
 - **Syncthing:** https://www.atlantic.net/dedicated-server-hosting/how-to-install-syncthing-on-ubuntu-22-04/
 	- Don't forget to configure the web UI (0.0.0.0 for GUI IP address, set HTTPS, set username and password, disable all the NAT traversal and discovery things)
-- **Vivaldi:** https://vivaldi.com/download/
 - **VSCodium:** https://vscodium.com/#install-on-debian-ubuntu-deb-package
-- **Zed:** https://zed.dev/download
 
 
 
@@ -482,7 +476,27 @@ sudo nano /usr/share/applications/waterfox.desktop
 
 Copy the contents of [waterfox.desktop](../config-files/waterfox.desktop)
 
+## Cautions
 
+- `sudo apt install chromium` will install a Snap
+
+## Archived
+
+### Archived because Flatpaks are available
+
+- **Brave:** From "App Center" (snaps) (yes it is available as `.deb` as well, but let's keep it simple given how infrequently we use this)
+- **Ferdium (e.g., for WhatsApp):** Unfortunately the version from "App Center" (snaps) doesn't work; instead go to https://github.com/ferdium/ferdium-app/releases, download the `.deb` file, and install using `sudo dpkg -i`
+- **FSearch:** https://github.com/cboxdoerfer/fsearch?tab=readme-ov-file#download and follow
+
+### Archived because no longer required
+
+- **fastfetch:** https://github.com/fastfetch-cli/fastfetch
+- **Vivaldi:** https://vivaldi.com/download/
+- **Zed:** https://zed.dev/download instructions for Ubuntu PPA Stable
+
+```bash
+sudo apt install pavucontrol python3.12-venv ttf-mscorefonts-installer
+```
 
 ## Regular administration and maintenance
 

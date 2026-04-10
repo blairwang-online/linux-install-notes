@@ -1,4 +1,14 @@
-# Git / GitHub credentials saver
+# Git / GitHub
+
+## git lfs
+
+```bash
+sudo apt install git-lfs
+
+git lfs install
+```
+
+## Credentials saver
 
 As per https://unix.stackexchange.com/questions/379272/storing-username-and-password-in-git
 
