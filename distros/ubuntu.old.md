@@ -5,7 +5,7 @@
 These are no longer required (and/or not supported in Ubuntu 26.04 LTS):
 
 ```bash
-sudo apt install cheese dconf-editor ddcutil exiftool gnome-builder nautilus-dropbox obs-studio pasaffe syncthing vlc wl-clipboard
+sudo apt install cheese dconf-editor ddcutil exiftool gnome-builder gnome-sushi nautilus-dropbox obs-studio pasaffe syncthing vlc wl-clipboard
 
 sudo apt install pavucontrol python3.12-venv ttf-mscorefonts-installer
 ```
