@@ -57,7 +57,7 @@ flatpak install flathub com.github.marhkb.Pods
 flatpak install flathub com.jeffser.Alpaca
 ```
 
-As of April 2026, just then go through the in-app onboarding process for Ollama; no need to download Ollama separately.
+As of April 2026, there is no need to download Ollama separately. Just then go through the in-app onboarding process for Ollama; when you get to the step called **Instances**, select **Create Ollama Instance**.
 
 ## Extras
 

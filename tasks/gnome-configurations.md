@@ -14,6 +14,23 @@ In the GNOME settings app:
     - Turn everything off, we don't want this autoplay nonsense!
 - Apply Network profiles if needed (e.g., static IP addresses)
 
+### Tweaks
+
+```bash
+gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+gsettings set org.gnome.desktop.wm.preferences resize-with-right-button true
+gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier '<Alt>'
+
+gsettings get org.gnome.desktop.interface font-hinting
+gsettings set org.gnome.desktop.interface font-hinting 'none'
+
+gsettings get org.gnome.desktop.interface font-name # e.g., 'Ubuntu Sans 11'
+gsettings set org.gnome.desktop.interface font-name "Adwaita Sans 11"
+
+gsettings get org.gnome.desktop.interface monospace-font-name # e.g., 'Ubuntu Sans Mono 11'
+gsettings set org.gnome.desktop.interface monospace-font-name "Adwaita Mono 11"
+```
+
 ## GNOME Terminal change padding
 
 1. `nano ~/.config/gtk-3.0/gtk.css`

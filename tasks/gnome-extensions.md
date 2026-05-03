@@ -1,18 +1,26 @@
 # GNOME Extensions
 
+## Ubuntu-specific
+
+Turn off:
+
+- Snapd Search Provider
+- Web Search Provider
+
 ## Must have
 
 - Astra Monitor by `AstraExt` [1]
 - Power Tracker by `pijuli`
-- Desktop Icons NG (DING) by `rastersoft`
+- Desktop Icons NG (DING) by `rastersoft` _(WARNING: might already be installed on Ubuntu)_
 
 ## Should have
 
-- Dash to Dock by `michele_g`
+- Dash to Dock by `michele_g` _(WARNING: might already be installed on Ubuntu)_
 - ArcMenu by `andrew.zaech` (note: `sudo pacman -S gnome-menus` to get it to work)
 
 ## Could have
 
+- User Themes by `fmuellner`
 - Brightness control using ddcutil by `themightydeity`
 - Blur my Shell by `aunetx`
 - You may also consider installing some from https://www.debugpoint.com/gnome-40-extensions/

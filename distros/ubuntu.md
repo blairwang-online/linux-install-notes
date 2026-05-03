@@ -36,6 +36,8 @@ These notes based on **Ubuntu 24.04 LTS**.
 
 See https://flatpak.org/setup/Ubuntu
 
+Then complete tasks as per [install-flatpaks.md](../tasks/install-flatpaks.md)
+
 ### Server and workstation
 
 ```bash
@@ -45,7 +47,7 @@ sudo apt-get install -y aria2 bat btop hyfetch lm-sensors jq lolcat nodejs npm s
 ### Workstation only
 
 ```bash
-sudo apt-get install -y audacity cheese dconf-editor ddcutil exiftool geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe synaptic syncthing tree vlc wl-clipboard
+sudo apt install audacity dconf-editor ddcutil  geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe synaptic syncthing tree vlc wl-clipboard
 
 # Snaps where the apt/deb version is problematic or unavailable
 sudo snap install 0ad
@@ -66,6 +68,11 @@ Manual installations:
 - **Spotify:** https://www.spotify.com/de-en/download/linux/ (use the DEB method, unless you really like snaps)
 - **Syncthing:** https://www.atlantic.net/dedicated-server-hosting/how-to-install-syncthing-on-ubuntu-22-04/
 	- Don't forget to configure the web UI (0.0.0.0 for GUI IP address, set HTTPS, set username and password, disable all the NAT traversal and discovery things)
+
+
+## pandoc and pdflatex
+
+sudo apt install pandoc texlive-full
 
 ### LAMP server
 
@@ -108,7 +115,23 @@ Configuring PHP:
 
 ## Software Configurations
 
+### System Settings
+
+Search:
+
+- Turn off most items
+
 ### NTP setup
+
+Before proceeding, first check if NTP is already set up, using:
+
+```bash
+timedatectl status
+```
+
+If it is already active then you do not need to do the below!
+
+Otherwise:
 
 ```bash
 sudo nano /etc/systemd/timesyncd.conf
@@ -291,57 +314,12 @@ sudo npm install -g typescript
 Note: if any of these cause errors, then reconsider that line item.
 
 ```bash
+snap list
 snap remove firefox
-snap remove gnome-46-2404
-snap remove mesa-2404
-snap remove snap-store
-snap remove snapd-desktop-integration
 ```
 
 
 ## Artificial Intelligence
-
-
-### Reor
-
-Download the latest AppImage at https://github.com/reorproject/reor/releases/tag/v0.2.18
-
-Try to run as normal but if you get an error like "Rather than run without sandboxing I'm aborting now." then try this:
-
-```bash
-./Reor_0.2.18.AppImage --no-sandbox
-```
-
-Reor seems to automatically pick up the Ollama models in `/usr/share/ollama/.ollama/models/`.
-
-### aTrain
-
-First you will need to `sudo apt install ffmpeg python3.11 python3.11-venv`
-
-You can then follow the rest of the "Debian" instructions:
-
-```bash
-# Go to the folder you want to setup ATrain in
-python3.11 -m venv atrain_venv
-source atrain_venv/bin/activate
-
-# Check venv in use
-which python
-
-# Update pip
-python -m pip install --upgrade pip
-
-# Install aTrain
-python -m pip install aTrain@git+https://github.com/BANDAS-Center/aTrain.git --extra-index-url https://download.pytorch.org/whl/cu118
-
-# Next, you need aTrain to download all the necessary models for transcription and speaker detection. This has only to be done once when installing it.
-aTrain init
-
-# You are now ready to start aTrain. The following command should open a webrowser window with the user interface.
-aTrain start
-```
-
-(From https://github.com/JuergenFleiss/aTrain/wiki/Linux-Support but adapted for Ubuntu here)
 
 
 ### Stable Diffusion

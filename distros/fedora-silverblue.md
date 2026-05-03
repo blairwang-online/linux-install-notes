@@ -101,20 +101,12 @@ sudo mount -t cifs -o rw,credentials=/home/blair/TODO-PUT-HERE-credentials.txt,n
 
 - Power Saving --> Automatic Suspend --> DISABLE when plugged in
 
-### GNOME Extensions
+### GNOME Extensions and Configurations
 
 Already installed, just run it and setup your bits.
 
 - Complete tasks as per [gnome-extensions.md](../tasks/gnome-extensions.md)
-
-### Tweaks
-
-gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
-gsettings set org.gnome.desktop.wm.preferences resize-with-right-button true
-gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier '<Alt>'
-
-gsettings get org.gnome.desktop.interface font-hinting
-gsettings set org.gnome.desktop.interface font-hinting 'none'
+- Complete tasks as per [gnome-configurations.md](../tasks/gnome-configurations.md)
 
 
 ## RPM packages with rpm-ostree (Layered Packages)
