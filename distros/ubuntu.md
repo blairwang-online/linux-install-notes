@@ -2,20 +2,24 @@
 
 ## Rationale
 
-These notes based on **Ubuntu 24.04 LTS**.
+Tested with **Ubuntu 24.04 LTS** and **Ubuntu 26.04 LTS**.
 
 ## Install Ubuntu by USB
 
 - Complete tasks as per [install-to-bare-metal.md](../tasks/install-to-bare-metal.md)
 - Connect to Wifi so that the installer can update
+	- Skip this step if you want to exclusively use a specific apt server like `aarnet`.
 - Select **Interactive installation**
 - Select **Default selection**
-- Install recommended proprietary software>
+- Install recommended proprietary software
 	- YES to both
 - How do you want to install Ubuntu?
 	- Unless you know you want otherwise (e.g., Dual Boot): Select "Erase disk and install Ubuntu"
-	- Click on **Advanced Features**
-	- Select **Use LVM and encryption**
+	- On Ubuntu 24.04 LTS:
+		- Click on **Advanced Features**
+		- Select **Use LVM and encryption**
+	- On Ubuntu 26.04 LTS:
+		- You will be prompted for if and how you want to set up disk encryption.
 
 ## On First Boot
 
@@ -23,6 +27,50 @@ These notes based on **Ubuntu 24.04 LTS**.
 
 - Skip "Ubuntu Pro" unless you use it
 - No, don't share system data - unless you'd like to (it's nice how they show what is being transmitted)
+
+### Configure apt server
+
+NOTE: This part has been tested with Ubuntu 26.04 LTS only; it may need to be adapted to other versions (e.g., Ubuntu 24.04 LTS).
+
+Edit the sources file:
+
+```bash
+sudo nano /etc/apt/sources.list.d/ubuntu.sources
+```
+
+Default:
+
+```
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: resolute resolute-updates resolute-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu/
+Suites: resolute-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+```
+
+New (updated URIs):
+
+```
+Types: deb
+URIs: https://mirror.aarnet.edu.au/pub/ubuntu/archive/
+Suites: resolute resolute-updates resolute-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirror.aarnet.edu.au/pub/ubuntu/archive/
+Suites: resolute-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+```
+
+I'm using the AARNET mirror; update URIs according to your local needs.
 
 ### Initial administrative tasks
 
@@ -55,24 +103,13 @@ sudo apt install audacity geany geany-plugins gcolor3 gimp gitg gnome-contacts g
 sudo snap install 0ad
 ```
 
-Fonts:
-
-```bash
-sudo apt-get install fonts-clear-sans fonts-comic-neue fonts-courier-prime fonts-inconsolata fonts-inter fonts-open-sans fonts-ricty-diminished fonts-roboto
-
-# Do not use because outdated
-# sudo apt install fonts-ebgaramond fonts-ebgaramond-extra
-```
-
 Manual installations:
 
 - **Signal:** https://signal.org/download/linux/
-- **Spotify:** https://www.spotify.com/de-en/download/linux/ (use the DEB method, unless you really like snaps)
 - **Syncthing:** https://www.atlantic.net/dedicated-server-hosting/how-to-install-syncthing-on-ubuntu-22-04/
 	- Don't forget to configure the web UI (0.0.0.0 for GUI IP address, set HTTPS, set username and password, disable all the NAT traversal and discovery things)
 
-
-## pandoc and pdflatex
+### pandoc and pdflatex
 
 sudo apt install pandoc texlive-full
 
@@ -414,28 +451,6 @@ As per https://help.ubuntu.com/community/AppleKeyboard#Change_Function_Key_behav
 
 - `sudo apt install chromium` will install a Snap
 
-### Archived because Flatpaks are available
-
-- **Brave:** From "App Center" (snaps) (yes it is available as `.deb` as well, but let's keep it simple given how infrequently we use this)
-- **Ferdium (e.g., for WhatsApp):** Unfortunately the version from "App Center" (snaps) doesn't work; instead go to https://github.com/ferdium/ferdium-app/releases, download the `.deb` file, and install using `sudo dpkg -i`
-- **FSearch:** https://github.com/cboxdoerfer/fsearch?tab=readme-ov-file#download and follow
-- **VSCodium:** https://vscodium.com/#install-on-debian-ubuntu-deb-package
-
-```bash
-sudo apt install gnome-calendar
-```
-
-### Archived because no longer required
-
-- **Docker**: https://docs.docker.com/engine/install/ubuntu/
-- **fastfetch:** https://github.com/fastfetch-cli/fastfetch
-- **Vivaldi:** https://vivaldi.com/download/
-- **Zed:** https://zed.dev/download instructions for Ubuntu PPA Stable
-
-```bash
-sudo apt install pavucontrol python3.12-venv ttf-mscorefonts-installer
-```
-
 ### LibreOffice spellcheck
 
 **NOTE:** This configuration is no longer required if you install LibreOffice via Flatpak. See [install-flatpaks.md](../tasks/install-flatpaks.md).
@@ -444,7 +459,6 @@ sudo apt install pavucontrol python3.12-venv ttf-mscorefonts-installer
 2. `sudo apt install hunspell-en-au hunspell-en-ca hunspell-en-gb`
 3. Open LibreOffice Writer, go to **Tools &rarr; Options &rarr; Languages and Locales &rarr; General**. Set **Locale setting** to, e.g., `English (Australia)`.
 4. Now go to **Tools &rarr; Options &rarr; Languages and Locales &rarr; Writing Aids**. In the "Available Language Modules" box, click on **Hunspell SpellChecker**, then click **Edit**. Select the relevant language and confirm that **Hunspell SpellChecker** is available and checked (ticked).
-
 
 ### Mozilla PPA for Firefox ESR and Thunderbird
 

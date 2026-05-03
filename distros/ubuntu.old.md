@@ -2,11 +2,21 @@
 
 ## Software (apt/deb)
 
-```bash
-sudo apt-get install -y cheese dconf-editor ddcutil exiftool gnome-builder nautilus-dropbox obs-studio pasaffe syncthing vlc wl-clipboard
+These are no longer required (and/or not supported in Ubuntu 26.04 LTS):
 
-# Snaps where the apt/deb version is problematic or unavailable
-sudo snap install 0ad
+```bash
+sudo apt install cheese dconf-editor ddcutil exiftool gnome-builder nautilus-dropbox obs-studio pasaffe syncthing vlc wl-clipboard
+
+sudo apt install pavucontrol python3.12-venv ttf-mscorefonts-installer
+```
+
+I now manage fonts locally using `~/.fonts`, but these should still work if required:
+
+```bash
+sudo apt-get install fonts-clear-sans fonts-comic-neue fonts-courier-prime fonts-inconsolata fonts-inter fonts-open-sans fonts-ricty-diminished fonts-roboto
+
+# Do not use because outdated
+# sudo apt install fonts-ebgaramond fonts-ebgaramond-extra
 ```
 
 ## Software (snap)
@@ -20,6 +30,25 @@ snap remove mesa-2404
 snap remove snap-store
 snap remove snapd-desktop-integration
 ```
+
+## Software (manual)
+
+Archived because Flatpaks are available:
+
+- **Brave:** From "App Center" (snaps) (yes it is available as `.deb` as well, but let's keep it simple given how infrequently we use this)
+- **Ferdium (e.g., for WhatsApp):** Unfortunately the version from "App Center" (snaps) doesn't work; instead go to https://github.com/ferdium/ferdium-app/releases, download the `.deb` file, and install using `sudo dpkg -i`
+- **FSearch:** https://github.com/cboxdoerfer/fsearch?tab=readme-ov-file#download and follow
+- **VSCodium:** https://vscodium.com/#install-on-debian-ubuntu-deb-package
+
+Archived because no longer required:
+
+- **Docker**: https://docs.docker.com/engine/install/ubuntu/
+- **fastfetch:** https://github.com/fastfetch-cli/fastfetch
+    - ARCHIVED: `hyfetch` works fine.
+- **Spotify:** https://www.spotify.com/de-en/download/linux/ (use the DEB method, unless you really like snaps)
+    - ARCHIVED: I now just run it in the browser.
+- **Vivaldi:** https://vivaldi.com/download/
+- **Zed:** https://zed.dev/download instructions for Ubuntu PPA Stable
 
 ## Artificial Intelligence
 

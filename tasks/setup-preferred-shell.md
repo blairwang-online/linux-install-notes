@@ -27,7 +27,13 @@ Then logout and log back in, then setup oh-my-zsh:
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
-## Pure
+## Set theme
+
+### Option 1 - crcandy
+
+Edit `~/.zshrc` and set the theme to `crcandy`.
+
+### Option 2 - Pure
 
 As per https://github.com/sindresorhus/pure
 

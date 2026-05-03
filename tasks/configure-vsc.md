@@ -1,25 +1,18 @@
 # Configure VSC
 
-## VSCode server
-
-- Go to https://github.com/coder/code-server
-- The _"Getting started"_ auto-script is pretty good
-- To enable HTTPS, edit `~/.config/code-server/config.yaml` and set `cert: true`
-
 ## Handy extensions
 
 - Catppuccin Pack
 - Markdown All in One
 
-## Be careful when changing the editor font
+## Configure copy line down keybinding
 
-Caution! Certain fonts will change the functionality of the backtick key (`) into a diacritic marker. I had this issue with **Ricty Diminished**.
+- Click on the Gear icon (bottom-left corner), then **Keyboard Shortcuts**
+- Modify `copyLinesDownAction` and `copyLinesUpAction` as desired, removing any existing shortcuts using the one you want.
 
-See also: https://www.reddit.com/r/vscode/comments/t64ega/cant_type_backtick/
+Adapted from https://stackoverflow.com/questions/38727047/duplicate-line-in-visual-studio-code
 
-## Linux-specific
-
-### Fonts may have subpixel (ClearType-style) rendering by default
+## Fonts may have subpixel (ClearType-style) rendering by default
 
 To fix this:
 
@@ -27,9 +20,14 @@ To fix this:
 ln -s ~/00blair/gitrepos-github/linux-install-notes/config-files/dot-fonts.conf ~/.fonts.conf
 ```
 
-### Configure copy line down keybinding
+## Be careful when changing the editor font
 
-- Click on the Gear icon (bottom-left corner), then **Keyboard Shortcuts**
-- Modify `copyLinesDownAction` and `copyLinesUpAction` as desired, removing any existing shortcuts using the one you want.
+Caution! Certain fonts will change the functionality of the backtick key (`) into a diacritic marker. I had this issue with **Ricty Diminished**.
 
-Adapted from https://stackoverflow.com/questions/38727047/duplicate-line-in-visual-studio-code
+See also: https://www.reddit.com/r/vscode/comments/t64ega/cant_type_backtick/
+
+## VSCode server (only if required)
+
+- Go to https://github.com/coder/code-server
+- The _"Getting started"_ auto-script is pretty good
+- To enable HTTPS, edit `~/.config/code-server/config.yaml` and set `cert: true`
