@@ -46,8 +46,10 @@ sudo apt-get install -y aria2 bat btop hyfetch lm-sensors jq lolcat nodejs npm s
 
 ### Workstation only
 
+Note: if gnome-sushi is not working (an issue with Ubuntu 26.04 LTS as at 03 May 2026) - then you can install it from Flathub. See https://flathub.org/en/apps/org.gnome.NautilusPreviewer
+
 ```bash
-sudo apt install audacity dconf-editor ddcutil  geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe synaptic syncthing tree vlc wl-clipboard
+sudo apt install audacity geany geany-plugins gcolor3 gimp gitg gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-nextcloud synaptic tree vlc wireshark wl-clipboard
 
 # Snaps where the apt/deb version is problematic or unavailable
 sudo snap install 0ad

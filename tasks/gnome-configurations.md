@@ -21,6 +21,9 @@ gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize
 gsettings set org.gnome.desktop.wm.preferences resize-with-right-button true
 gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier '<Alt>'
 
+gsettings get org.gnome.desktop.interface font-antialiasing # e.g., 'rgba'
+gsettings set org.gnome.desktop.interface font-antialiasing "grayscale"
+
 gsettings get org.gnome.desktop.interface font-hinting
 gsettings set org.gnome.desktop.interface font-hinting 'none'
 

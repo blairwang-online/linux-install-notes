@@ -3,7 +3,7 @@
 ## Software (apt/deb)
 
 ```bash
-sudo apt-get install -y audacity cheese dconf-editor ddcutil exiftool geany geany-plugins gcolor3 gimp gitg gnome-builder gnome-contacts gnome-maps gnome-sushi gnome-tweaks gnome-weather meld nautilus-dropbox nautilus-nextcloud obs-studio pasaffe synaptic syncthing tree vlc wl-clipboard
+sudo apt-get install -y cheese dconf-editor ddcutil exiftool gnome-builder nautilus-dropbox obs-studio pasaffe syncthing vlc wl-clipboard
 
 # Snaps where the apt/deb version is problematic or unavailable
 sudo snap install 0ad

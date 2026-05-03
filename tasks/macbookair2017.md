@@ -84,6 +84,8 @@ gsettings set org.gnome.mutter overlay-key ''
 
 ### Remapping keyboard shortcuts using keyd
 
+Before you proceed, run `sudo apt install make checkinstall` - these may already be installed from above.
+
 Follow instructions for building from source: https://github.com/rvaiya/keyd?tab=readme-ov-file#from-source
 
 Then:
@@ -93,7 +95,7 @@ sudo mkdir -p /etc/keyd
 sudo nano /etc/keyd/default.conf
 ```
 
-See [mac-keyd-config.conf](../mac-keyd-config.conf) for what to put in this file.
+See [mac-keyd-config.conf](../config-files/mac-keyd-config.conf) for what to put in this file.
 
 - To then **reload**, run `sudo keyd reload`
 - To **check for issues**, run `sudo systemctl status keyd`
