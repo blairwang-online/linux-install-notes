@@ -47,6 +47,9 @@ To dock it back, just double-click the **Project Monitor** label again.
 
 Click on the **Effects** tab, search for **Compressor/Expander**. Then drag-and-drop it onto the audio track. Do this before making any cuts to the clip!
 
+NOTE: Drag-and-drop it onto the blank space on the left-hand side of the track (i.e., _Track A1 effects_). Do not drag-and-drop it into the track timeline!
+(The latter will still work, but it will treat each cut clip as its own audio track, resulting in frequent variations to the volume... not great.)
+
 Unfortuantely the **audio waveform preview** in the timeline does not automatically update, so you will need to inspect for peaking/gain using manual efforts, listening to the file, and basically good luck.
 
 

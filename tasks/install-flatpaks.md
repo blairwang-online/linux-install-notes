@@ -13,6 +13,7 @@ flatpak install flathub org.mozilla.Thunderbird
 flatpak install flathub com.brave.Browser
 flatpak install flathub org.ferdium.Ferdium
 flatpak install flathub it.mijorus.smile
+flatpak install flathub de.wwwtech.gitte
 ```
 
 ## Configuration
