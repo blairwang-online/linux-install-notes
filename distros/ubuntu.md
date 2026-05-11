@@ -30,7 +30,7 @@ Tested with **Ubuntu 24.04 LTS** and **Ubuntu 26.04 LTS**.
 
 ### Configure apt server
 
-- Complete the tasks specified at [ubuntu-configure-apt-mirror.md](tasks/ubuntu-configure-apt-mirror.md)
+- Complete the tasks specified at [ubuntu-configure-apt-mirror.md](../tasks/ubuntu-configure-apt-mirror.md)
 
 ### Initial administrative tasks
 
