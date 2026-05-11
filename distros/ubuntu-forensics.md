@@ -1,4 +1,4 @@
-# Ubuntu forensics environment
+# Ubuntu forensics workstation
 
 ## Getting Ubuntu
 
@@ -12,13 +12,13 @@ Complete the tasks specified at [ubuntu-configure-apt-mirror.md](../tasks/ubuntu
 
 ## Specific software packages
 
-### Autopsy [DONE, NONROOT VERIFIED]
+### Autopsy
 
 ```bash
 sudo snap install autopsy
 ```
 
-### Volatility version 2 [DONE]
+### Volatility version 2
 
 First, you need to set up Python version 2 - complete the tasks specified at [python2-on-ubuntu-2404-2604.md](../tasks/python2-on-ubuntu-2404-2604.md).
 
@@ -28,7 +28,14 @@ https://github.com/volatilityfoundation/volatility/releases/latest
 
 Once unzipped, you can then run `~/Downloads/volatility_2.6_lin64_standalone/volatility_2.6_lin64_standalone`
 
-### Viking (analysing GPS data) [DONE, NONROOT VERIFIED]
+For example:
+
+```bash
+VOLATILITY=~/Downloads/volatility_2.6_lin64_standalone/volatility_2.6_lin64_standalone
+$VOLATILITY -f ~/Desktop/Lab-data/jo-2009-12-11.mdramimage connections > connections.txt
+```
+
+### Viking (analysing GPS data)
 
 ```bash
 sudo apt install viking
