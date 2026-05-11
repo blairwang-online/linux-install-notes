@@ -16,4 +16,4 @@ curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 pip install "Pillow<7"
 ```
 
-as per https://www.centron.de/en/tutorial/install-python-2-on-ubuntu-22-04-with-pip-setup
+As per https://www.centron.de/en/tutorial/install-python-2-on-ubuntu-22-04-with-pip-setup
