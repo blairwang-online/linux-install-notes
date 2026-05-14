@@ -1,5 +1,9 @@
 # Ubuntu - digital forensics workstation
 
+## Scope
+
+Tested with **Ubuntu 24.04 LTS**.
+
 ## Getting Ubuntu
 
 Obtain the installer from https://mirror.aarnet.edu.au/pub/ubuntu/releases/24.04/

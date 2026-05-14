@@ -1,6 +1,6 @@
 # Ubuntu setup notes by Blair
 
-## Rationale
+## Scope
 
 Tested with **Ubuntu 24.04 LTS** and **Ubuntu 26.04 LTS**.
 
@@ -57,7 +57,7 @@ sudo apt install aria2 bat btop hyfetch lm-sensors jq lolcat nodejs npm pipx scr
 Note: if gnome-sushi is not working (an issue with Ubuntu 26.04 LTS as at 03 May 2026) - then you can install it from Flathub. See https://flathub.org/en/apps/org.gnome.NautilusPreviewer
 
 ```bash
-sudo apt install audacity ffmpeg geany geany-plugins gcolor3 gimp gitg gnome-contacts gnome-maps gnome-tweaks gnome-weather meld nautilus-nextcloud synaptic tree vlc wireshark wl-clipboard
+sudo apt install audacity ffmpeg geany geany-plugins gcolor3 gimp gitg gnome-contacts gnome-maps gnome-tweaks gnome-weather meld nautilus-nextcloud showtime synaptic tree vlc wireshark wl-clipboard
 
 # Snaps where the apt/deb version is problematic or unavailable
 sudo snap install 0ad

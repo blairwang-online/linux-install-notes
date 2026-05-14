@@ -3,17 +3,19 @@
 ## Regular workstation
 
 ```bash
+flatpak install flathub de.wwwtech.gitte
 flatpak install flathub com.github.tchx84.Flatseal
 flatpak install flathub com.obsproject.Studio
 flatpak install flathub com.vscodium.codium
 flatpak install flathub io.github.cboxdoerfer.FSearch
-flatpak install flathub org.keepassxc.KeePassXC
-flatpak install flathub org.pwsafe.pwsafe
-flatpak install flathub org.mozilla.Thunderbird
+flatpak install flathub it.mijorus.smile
 flatpak install flathub com.brave.Browser
 flatpak install flathub org.ferdium.Ferdium
-flatpak install flathub it.mijorus.smile
-flatpak install flathub de.wwwtech.gitte
+flatpak install flathub org.keepassxc.KeePassXC
+flatpak install flathub org.localsend.localsend_app
+flatpak install flathub org.mozilla.Thunderbird
+flatpak install flathub org.pwsafe.pwsafe
+flatpak install flathub xyz.parlatype.Parlatype
 ```
 
 ## Configuration
