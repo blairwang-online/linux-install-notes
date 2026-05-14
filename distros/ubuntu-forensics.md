@@ -1,10 +1,10 @@
-# Ubuntu forensics workstation
+# Ubuntu - digital forensics workstation
 
 ## Getting Ubuntu
 
-Obtain the installer from https://mirror.aarnet.edu.au/pub/ubuntu/releases/26.04/
+Obtain the installer from https://mirror.aarnet.edu.au/pub/ubuntu/releases/24.04/
 
-`ubuntu-26.04-desktop-amd64.iso`
+`ubuntu-24.04-desktop-amd64.iso`
 
 ## Immediately after installing Ubuntu
 

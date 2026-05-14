@@ -9,6 +9,7 @@ Distros:
 - 🌀 [Fedora](distros/fedora.md)
 - 🔷 [Fedora Silverblue](distros/fedora-silverblue.md)
 - 🍊 [Ubuntu](distros/ubuntu.md)
+- 🕵️ [Ubuntu - digital forensics workstation](distros/ubuntu-forensics.md)
 
 Featured tasks:
 

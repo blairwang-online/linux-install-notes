@@ -73,9 +73,13 @@ Manual installations:
 
 sudo apt install pandoc texlive-full
 
-### Autopsy
+### Enable support for HEIC images
 
-sudo snap install autopsy
+```bash
+sudo apt install libheif-plugin-libde265
+```
+
+As advised by https://www.omgubuntu.co.uk/2026/05/fix-heic-images-not-loading-ubuntu-26-04
 
 ### LAMP server
 
