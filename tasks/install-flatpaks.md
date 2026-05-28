@@ -13,7 +13,7 @@ flatpak install flathub com.brave.Browser
 flatpak install flathub org.ferdium.Ferdium
 flatpak install flathub org.keepassxc.KeePassXC
 flatpak install flathub org.localsend.localsend_app
-flatpak install flathub org.mozilla.Thunderbird
+flatpak install flathub org.mozilla.thunderbird_esr
 flatpak install flathub org.pwsafe.pwsafe
 flatpak install flathub xyz.parlatype.Parlatype
 ```
