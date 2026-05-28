@@ -24,6 +24,14 @@ If you want all your Flatpak apps to use a custom UI font, go to **Flatseal &rar
 
 ## Specific apps
 
+### If any QT-based apps (e.g., KeepassXC) do not have a drop-shadow in GNOME
+
+Use Flatseal to add the following environment variable:
+
+```
+QT_QPA_PLATFORM=xcb
+```
+
 ### LibreOffice
 
 ```bash
