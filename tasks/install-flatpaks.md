@@ -8,6 +8,7 @@ flatpak install flathub com.github.tchx84.Flatseal
 flatpak install flathub com.obsproject.Studio
 flatpak install flathub com.vscodium.codium
 flatpak install flathub io.github.cboxdoerfer.FSearch
+flatpak install flathub io.github.juergenfleiss.aTrain
 flatpak install flathub it.mijorus.smile
 flatpak install flathub com.brave.Browser
 flatpak install flathub org.ferdium.Ferdium

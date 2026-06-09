@@ -21,5 +21,5 @@ Featured tasks:
 - 🧰 [Git and GitHub configuration](tasks/git-and-github-configuration.md) &mdash; save credentials, setup LFS
 - 📦️ [Install Flatpaks](tasks/install-flatpaks.md) &mdash; reliable and isolated (can switch off per-app network permissions, etc.)
 - 📽️ [Kdenlive installation and usage](tasks/kdenlive.md) &mdash; video editing.
-- 💻️ [MacBook Air 2017](tasks/macbooakir2017.md) &mdash; Wi-Fi, webcam, colour profile, key mappings _(tested on Ubuntu 24.04 LTS)_
+- 💻️ [MacBook Air 2017](tasks/macbookakir2017.md) &mdash; Wi-Fi, webcam, colour profile, key mappings _(tested on Ubuntu 24.04 LTS)_
 - 🐚 [Setup preferred shell](tasks/setup-preferred-shell.md) &mdash; configure ZSH with oh-my-zsh.
