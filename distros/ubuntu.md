@@ -244,6 +244,13 @@ Recommended about:config settings:
 - `pdfjs.defaultZoomValue` = `page-fit` (as per https://support.mozilla.org/bm/questions/1106654)
 - `pdfjs.spreadModeOnLoad` = `1` (as per https://stackoverflow.com/questions/65401710/pdf-js-default-spread-setting)
 
+### Enable webm files to have thumbnails generated for them
+
+```bash
+sudo apt update
+sudo apt install ffmpegthumbnailer gstreamer1.0-libav gstreamer1.0-plugins-ugly
+```
+
 ### GNOME Settings
 
 - Sound -> Alert Sound -> None
