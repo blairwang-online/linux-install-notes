@@ -19,30 +19,64 @@ sudo apt install tasksel
 sudo tasksel # select MATE
 
 # On login to MATE
-sudo apt install redshift synapse mate-tweak xclip
+sudo apt install humanity-icon-theme mate-tweak redshift synapse xclip
 
-# If using LibreOffice
+# If using LibreOffice Flatpak
 sudo apt remove libreoffice-common
 ```
 
-- Redshift: does the same thing as "night light" on GNOME
-- Synpase: configure it to Super+Spacebar and you have a working app search/launcher
-- MATE Tweak: to show desktop icons
-- xclip: because wl-copy won't be working as MATE doesn't run on Wayland
+- **Humanity icon theme:** as a fallback for missing icons in the Human icon theme
+- **MATE Tweak:** to show desktop icons
+- **Redshift:** does the same thing as "night light" on GNOME
+- **Synpase:** configure it to Super+Spacebar and you have a working app search/launcher
+- **xclip:** because wl-copy won't be working as MATE doesn't run on Wayland
 
-### Resolving MATE-specific issues
+## MATE-specific configurations
 
-**Cannot start _Ungoogled Chromium_**:
+### Problem: Headphone connector not working
 
-```bash
+Solution: Use _pavucontrol_.
+
+```zsh
+sudo apt install pavucontrol
+```
+
+Then run pavucontrol (PulseAudio Volume Control), click on **Configuration**, and set the **Profile** to use the one that has the word _Headphones_.
+
+Tested on HP ZBook Firefly 14 inch G8 Mobile Workstation (Intel Corporation Tiger Lake-LP Smart Sound Technology Audio Controller).
+
+### Problem: Icons not display correctly
+
+Solution: Ensure that Flatpak apps get access to the required icons.
+
+In Flatseal, grant access to `/home/(your username here)/.icons` - ensuring that you replace _(your username here)_ with your actual username.
+
+### Problem: FSearch (from Flatpak) is not respecting my choice of preferred applications
+
+Solution: Remove the flatpak version and reinstall using apt.
+
+```zsh
+flatpak remove io.github.cboxdoerfer.FSearch
+sudo apt install fsearch
+```
+
+### Problem: Cannot start Ungoogled Chromium
+
+Solution: Force Ungoogled Chromium to start in X11 mode.
+
+```zsh
 nano ~/.var/app/io.github.ungoogled_software.ungoogled_chromium/config/chromium-flags.conf
 ```
 
 Insert the following text:
 
-```bash
+```zsh
 --ozone-platform=x11
 ```
+
+### Nice-to-have: Native titlebar in VSC
+
+In VSC, open settings (Ctrl + ,) and then set `window.titleBarStyle` to `native`.
 
 ## Classic Ubuntu themes
 
@@ -68,7 +102,7 @@ As per vetrixblog's [Reddit post](https://www.reddit.com/r/unixporn/comments/rmx
 2. For both of these, you can right-click to extract, then navigate the usr/share/icons hierarchy in each of the extracted folders. Then you can move **Human** and **Tangerine** both to `~/.icons`.
 3. Modify `index.theme` as follows:
     - Before: `Inherits=Tangerine,gnome`
-    - After: `Inherits=Tangerine,gnome,Yaru`
+    - After: `Inherits=Tangerine,Humanity,gnome,Yaru`
     - This will ensure that any missing icons (esp. for more modern apps) are picked up from the Ubuntu 26.04 LTS _Yaru_ theme
 4. Delete the following files from `16x16/status` (otherwise the volume-up and volume-down HUD icons will be intensely pixellated):
     - audio-volume-muted.png
