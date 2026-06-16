@@ -35,13 +35,7 @@ sudo apt remove libreoffice-common
 
 ### Problem: Headphone connector not working
 
-Solution: Use _pavucontrol_.
-
-```zsh
-sudo apt install pavucontrol
-```
-
-Then run pavucontrol (PulseAudio Volume Control), click on **Configuration**, and set the **Profile** to use the one that has the word _Headphones_.
+Solution: Open up **Sound** (control/preferences), click **Hardware**, then ensure that **Profile** is the one that specifies **Headphones** (among other things) rather than **Speakers** (among other things).
 
 Tested on HP ZBook Firefly 14 inch G8 Mobile Workstation (Intel Corporation Tiger Lake-LP Smart Sound Technology Audio Controller).
 
