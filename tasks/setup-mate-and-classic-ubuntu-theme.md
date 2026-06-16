@@ -33,6 +33,16 @@ sudo apt remove libreoffice-common
 
 ## MATE-specific configurations
 
+### Problem: Cannot find a place to configure Bluetooth devices?
+
+Solution: Install `blueman`
+
+```bash
+sudo apt install blueman
+```
+
+Then you should be able to launch **Bluetooth Manager**.
+
 ### Problem: Headphone connector not working
 
 Solution: Open up **Sound** (control/preferences), click **Hardware**, then ensure that **Profile** is the one that specifies **Headphones** (among other things) rather than **Speakers** (among other things).
