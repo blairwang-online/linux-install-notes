@@ -1,6 +1,6 @@
 # Forgejo in a Podman container
 
-Self-hosted Git forge on AlmaLinux 10, run as a rootful Podman Quadlet so systemd starts it at boot, and served over HTTPS from the very first start with a self-signed certificate. Adapted from the Podman Quadlet example in https://forgejo.org/docs/latest/admin/installation-docker/ (tested by Forgejo on AlmaLinux 9.4 with Podman 5.2). Not tested end-to-end here yet.
+Self-hosted Git forge on AlmaLinux 10, run as a rootful Podman Quadlet so systemd starts it at boot, and served over HTTPS from the very first start with a self-signed certificate. Not tested end-to-end here yet. See [Sources](#sources) for where each part comes from.
 
 The order matters: set up the hostname, create the certificate, start Forgejo with HTTPS already on, trust the certificate on your own machine, and only then open the setup page. Forgejo serves HTTPS only, on port 3000, and never uses ports 80 or 443, so those stay free for other applications on the same machine.
 
@@ -199,6 +199,19 @@ sudo systemctl stop forgejo
 # copy or snapshot /srv/forgejo
 sudo systemctl start forgejo
 ```
+
+## Sources
+
+- **Quadlet files** (`forgejo.container`, `forgejo.network`): adapted from the _Podman_ section of Forgejo's [Installation with Docker](https://forgejo.org/docs/v15.0/admin/installation/docker/) page (the v15.0 docs, matching the image tag used here). That page never uses the word "Quadlet", but the files it has you save in `/etc/containers/systemd` are Quadlet unit files. Forgejo tested its example with Podman 5.2.1 on Fedora 40, AlmaLinux 9.4 and Rocky Linux 9. Changes from Forgejo's example:
+    - `/srv/forgejo` is bind-mounted with `:Z` instead of using a named volume, so there's no `.volume` file;
+    - added `[Unit] Description=` and `AutoUpdate=registry`;
+    - added the HTTPS and other `FORGEJO__` settings (Forgejo's example serves plain HTTP on 3000). The ports themselves, 3000 and 222, are the same.
+- **How Quadlet works**: Podman's [podman-systemd.unit(5)](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) covers where rootful Quadlet files go (`/etc/containers/systemd/`) and how the generator applies the `[Install]` section itself, which is why `systemctl enable` isn't used. [podman-container.unit(5)](https://docs.podman.io/en/latest/markdown/podman-container.unit.5.html) lists the `[Container]` keys used here, such as `AutoUpdate=`, `PublishPort=` and `Volume=`.
+- **Automatic updates**: [podman-auto-update(1)](https://docs.podman.io/en/latest/markdown/podman-auto-update.1.html). The `registry` policy needs a fully qualified image name, and `podman-auto-update.timer` runs it daily.
+- **Forgejo settings** (`PROTOCOL`, `CERT_FILE`, `KEY_FILE`, `DOMAIN`, `ROOT_URL`, `SSH_PORT`, `COOKIE_SECURE`, `DISABLE_REGISTRATION`, `REQUIRE_SIGNIN_VIEW`) and how `FORGEJO__section__KEY` variables map onto `app.ini`: Forgejo's [Configuration Cheat Sheet](https://forgejo.org/docs/v15.0/admin/config-cheat-sheet/). The `*` default for `REVERSE_PROXY_TRUSTED_PROXIES` in pre-16 container images, and the `127.0.0.0/8,::1/128` replacement, are from the Installation with Docker page above.
+- **Certificate generation**: `forgejo cert` in Forgejo's [command-line interface](https://forgejo.org/docs/latest/admin/command-line/) reference.
+- **Git's per-server certificate setting**: `http.<url>.sslCAInfo` and its URL matching rules are in [git-config](https://git-scm.com/docs/git-config).
+- The client trust-store commands and the Firefox `--ca` caveat come from general knowledge of those tools rather than one source. Check your OS documentation if anything behaves differently.
 
 ## Troubleshooting
 
