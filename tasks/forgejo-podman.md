@@ -113,7 +113,7 @@ sudo firewall-cmd --reload
 
 Don't run `systemctl enable forgejo`. Quadlet generates the service, and the `[Install]` section is what starts it at boot; `enable` fails on a generated unit.
 
-From another machine (the server itself may not resolve its own `.local` name), check that `curl -kI https://myserver.local/` gets a response and `curl -I http://myserver.local/` redirects to `https://`. The HTTPS check is the one that matters; the redirect is only a convenience for people who type `http://`, so if it's the only thing failing, see [Troubleshooting](#troubleshooting). Don't open the setup page yet.
+From another machine (the server itself may not resolve its own `.local` name), check that `curl -kI https://myserver.local/` gets a response. Port 80 won't answer yet: Forgejo only starts its HTTP-to-HTTPS redirect once the setup page (step 6) has been completed, so that check comes at the end of step 6. Don't open the setup page yet.
 
 ## 5. Trust the certificate on your clients
 
@@ -164,6 +164,8 @@ git clone https://myserver.local/<owner>/<repo>.git
 
 Push something over SSH once as well, which exercises Forgejo's internal hooks.
 
+Finally, check the HTTP-to-HTTPS redirect, which Forgejo starts only now that setup is complete. From another machine, `curl -I http://myserver.local/` should answer with a redirect to `https://myserver.local/`. If it doesn't, see [Troubleshooting](#troubleshooting).
+
 ## Who can connect
 
 Nothing in `forgejo.container` limits who can connect. `PublishPort` listens on all of the host's network interfaces and the firewall ports are open, so any machine on the LAN can reach Forgejo. To limit the web interface to this machine instead, use `PublishPort=127.0.0.1:443:3000`. `DOMAIN`, `ROOT_URL` and `REVERSE_PROXY_TRUSTED_PROXIES` don't control access either (see above).
@@ -209,11 +211,12 @@ sudo systemctl start forgejo
 - Logs: `sudo journalctl -u forgejo` or `sudo podman logs forgejo`.
 - If the container can't write to `/srv/forgejo`, check for SELinux denials: `sudo ausearch -m avc -ts recent`.
 - **`http://` doesn't redirect** (HTTPS works, but port 80 refuses connections). Forgejo's links, clone URLs and Git all use HTTPS, so this only affects people typing `http://`. On the server, check in order:
-    1. `sudo firewall-cmd --list-services` includes `http`.
-    2. `sudo podman port forgejo` lists `3080/tcp -> 0.0.0.0:80`.
-    3. `sudo grep -E '^(PROTOCOL|REDIRECT_OTHER_PORT|PORT_TO_REDIRECT)' /srv/forgejo/gitea/conf/app.ini` shows `https`, `true` and `3080`. The redirect only runs when `PROTOCOL` is `https`.
-    4. `sudo podman exec forgejo netstat -tln` shows something listening on `:3080`.
-    5. `curl -I http://localhost/` on the server redirects. If it does but other machines can't connect, the firewall is the problem.
+    1. Has the setup page been completed? Forgejo doesn't start the redirect while it's serving the setup page (its install mode starts the web server with the redirect turned off). If setup is done and the redirect still isn't there, run `sudo systemctl restart forgejo` once.
+    2. `sudo firewall-cmd --list-services` includes `http`.
+    3. `sudo podman port forgejo` lists `3080/tcp -> 0.0.0.0:80`.
+    4. `sudo grep -E '^(PROTOCOL|REDIRECT_OTHER_PORT|PORT_TO_REDIRECT)' /srv/forgejo/gitea/conf/app.ini` shows `https`, `true` and `3080`. The redirect only runs when `PROTOCOL` is `https`.
+    5. `sudo podman exec forgejo netstat -tln` shows something listening on `:3080`.
+    6. `curl -I http://localhost/` on the server redirects. If it does but other machines can't connect, the firewall is the problem.
 
     Or do without port 80: remove `PublishPort=80:3080` and the two `REDIRECT` lines from `forgejo.container`, run `sudo firewall-cmd --permanent --remove-service=http` and `sudo firewall-cmd --reload`, then `sudo systemctl daemon-reload` and `sudo systemctl restart forgejo`.
 - If step 2 fails with an error about `forgejo` not being found, use `--entrypoint /app/gitea/gitea` instead (the binary's location in the image).
