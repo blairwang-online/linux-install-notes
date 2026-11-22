@@ -6,7 +6,7 @@ Self-hosted Git forge on AlmaLinux 10, run as a rootful Podman Quadlet so system
 
 Use the LTS tag. Forgejo 15 is the current LTS, supported until 15 July 2027, and the `15` tag always points at the latest 15.x release. The next LTS is expected to be 19 (April 2027). Moving between major versions (for example 15 to 19) is a manual step: read the release notes and back up first.
 
-Forgejo 15's container images trust reverse-proxy headers from anywhere by default (`REVERSE_PROXY_TRUSTED_PROXIES = *`; changed in 16, but not in the 15 LTS). That only matters if reverse-proxy authentication is turned on, but the setting below narrows it anyway.
+Forgejo 15's container images trust reverse-proxy headers from anywhere by default (`REVERSE_PROXY_TRUSTED_PROXIES = *`; changed in 16, but not in the 15 LTS). That only matters behind a reverse proxy, but the setting below narrows it to localhost anyway. It controls which addresses Forgejo trusts to pass on headers such as `X-Forwarded-For`, not who can connect, so don't widen it to the LAN.
 
 ## Install
 
@@ -70,13 +70,55 @@ sudo firewall-cmd --reload
 
 Don't run `systemctl enable forgejo`. Quadlet generates the service, and the `[Install]` section is what starts it at boot; `enable` fails on a generated unit.
 
-Go to `http://myserver:3000` to finish setup. SQLite (the default) is fine for a small personal server. Create the admin account there.
+Go to `http://myserver:3000` to finish setup. SQLite (the default) is fine for a small personal server. Create the admin account there. Do this straight away: until the setup page has been completed, anyone who can reach port 3000 can complete it.
 
 Test SSH once your key is added in Forgejo:
 
 ```zsh
 ssh -F /dev/null -p 222 git@myserver
 ```
+
+## Access from other machines
+
+Nothing in `forgejo.container` limits who can connect. `PublishPort` listens on all of the host's network interfaces and the firewall ports are open, so any machine on the LAN can reach Forgejo at `http://myserver:3000`, or at the machine's IP address. To limit it to this machine instead, use `PublishPort=127.0.0.1:3000:3000`.
+
+`DOMAIN` and `ROOT_URL` don't control access either. They decide the links Forgejo generates: clone URLs, redirects after sign-in, and links in emails and webhooks. Forgejo still answers on any address, but if you browse by an address other than `ROOT_URL`, it shows a warning banner and some links point to the `ROOT_URL` address. So choose the one address you'll normally use:
+
+- **A hostname every network can resolve.** This is the better option for a machine that moves between networks. With mDNS, `myserver.local` works on most LANs without any router changes:
+
+    ```zsh
+    sudo dnf install -y avahi
+    sudo systemctl enable --now avahi-daemon
+    sudo firewall-cmd --permanent --add-service=mdns
+    sudo firewall-cmd --reload
+    ```
+
+    Then use `myserver.local` in the settings (`DOMAIN=myserver.local`, `ROOT_URL=http://myserver.local:3000/`). Recent Windows, macOS and most Linux desktops resolve `.local` names. A VPN address that doesn't change (WireGuard, Tailscale) works the same way.
+
+- **An IP address**, if it's fixed by a DHCP reservation or a static address:
+
+    ```ini
+    Environment=FORGEJO__server__DOMAIN=192.168.1.50
+    Environment=FORGEJO__server__ROOT_URL=http://192.168.1.50:3000/
+    ```
+
+    On a machine that moves between networks, the address usually differs on each one, so the links will be wrong somewhere.
+
+Either way, leave `SSH_PORT` and `REVERSE_PROXY_TRUSTED_PROXIES` as they are. After changing the settings, restart and check that they reached `app.ini`:
+
+```zsh
+sudo systemctl daemon-reload
+sudo systemctl restart forgejo
+sudo grep -E '^(DOMAIN|ROOT_URL|SSH_PORT)' /srv/forgejo/gitea/conf/app.ini
+```
+
+Because the whole LAN can reach it, turn off self-registration once your own account exists, by adding this to `[Container]`:
+
+```ini
+Environment=FORGEJO__service__DISABLE_REGISTRATION=true
+```
+
+Add `Environment=FORGEJO__service__REQUIRE_SIGNIN_VIEW=true` as well if public repositories shouldn't be visible to anyone on the LAN without signing in. Private repositories are hidden either way.
 
 ## Updates
 
