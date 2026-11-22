@@ -113,7 +113,7 @@ sudo firewall-cmd --reload
 
 Don't run `systemctl enable forgejo`. Quadlet generates the service, and the `[Install]` section is what starts it at boot; `enable` fails on a generated unit.
 
-From another machine (the server itself may not resolve its own `.local` name), check that `curl -kI https://myserver.local/` gets a response and `curl -I http://myserver.local/` redirects to `https://`. Don't open the setup page yet.
+From another machine (the server itself may not resolve its own `.local` name), check that `curl -kI https://myserver.local/` gets a response and `curl -I http://myserver.local/` redirects to `https://`. The HTTPS check is the one that matters; the redirect is only a convenience for people who type `http://`, so if it's the only thing failing, see [Troubleshooting](#troubleshooting). Don't open the setup page yet.
 
 ## 5. Trust the certificate on your clients
 
@@ -208,5 +208,13 @@ sudo systemctl start forgejo
 
 - Logs: `sudo journalctl -u forgejo` or `sudo podman logs forgejo`.
 - If the container can't write to `/srv/forgejo`, check for SELinux denials: `sudo ausearch -m avc -ts recent`.
+- **`http://` doesn't redirect** (HTTPS works, but port 80 refuses connections). Forgejo's links, clone URLs and Git all use HTTPS, so this only affects people typing `http://`. On the server, check in order:
+    1. `sudo firewall-cmd --list-services` includes `http`.
+    2. `sudo podman port forgejo` lists `3080/tcp -> 0.0.0.0:80`.
+    3. `sudo grep -E '^(PROTOCOL|REDIRECT_OTHER_PORT|PORT_TO_REDIRECT)' /srv/forgejo/gitea/conf/app.ini` shows `https`, `true` and `3080`. The redirect only runs when `PROTOCOL` is `https`.
+    4. `sudo podman exec forgejo netstat -tln` shows something listening on `:3080`.
+    5. `curl -I http://localhost/` on the server redirects. If it does but other machines can't connect, the firewall is the problem.
+
+    Or do without port 80: remove `PublishPort=80:3080` and the two `REDIRECT` lines from `forgejo.container`, run `sudo firewall-cmd --permanent --remove-service=http` and `sudo firewall-cmd --reload`, then `sudo systemctl daemon-reload` and `sudo systemctl restart forgejo`.
 - If step 2 fails with an error about `forgejo` not being found, use `--entrypoint /app/gitea/gitea` instead (the binary's location in the image).
 - Cockpit's _Podman containers_ page (`cockpit-podman`) shows the container and its logs.
