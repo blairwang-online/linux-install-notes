@@ -2,7 +2,7 @@
 
 ## Note
 
-This has been superseded by the Flatpak. See [install-flatpaks.md](install-flatpaks.md).
+This has been superseded by the Flatpak. See [install-flatpaks.md](../../tasks/install-flatpaks.md).
 
 ## Old instructions
 

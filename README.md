@@ -29,3 +29,5 @@ Featured tasks:
 - 👔 [Setup MATE and Classic Ubuntu theme](tasks/setup-mate-and-classic-ubuntu-theme.md) &mdash; retro comfy snappy vibes. _(tested on Ubuntu 26.04 LTS)_
 - 🐚 [Setup preferred shell](tasks/setup-preferred-shell.md) &mdash; configure ZSH with oh-my-zsh.
 - 🗂️ [Setup Samba](tasks/setup-samba.md) &mdash; host or connect to SMB shares, including SELinux steps for home folders and external drives.
+
+Older notes I no longer use are kept in the 🗄️ [archive](archive/README.md).
