@@ -15,6 +15,7 @@ Featured tasks:
 
 - 🎵 [Airplay for music](tasks/airplay.md) _(tested on Ubuntu 26.04 LTS)_
 - 🦙 [Alpaca](tasks/alpaca.md) &mdash; offline generative AI.
+- 🕰️ [Configure NTS time sync](tasks/configure-nts-time-sync.md) &mdash; authenticated NTP with chrony, for AlmaLinux, Fedora, Debian and Ubuntu.
 - ☂️ [Configure VSC](tasks/configure-vsc.md) &mdash; recommended settings for Visual Studio Code or VSCodium.
 - 🔨 [Forgejo in Podman](tasks/forgejo-podman.md) &mdash; self-hosted Git forge as a Podman Quadlet, HTTPS-only from the start with a self-signed certificate. _(AlmaLinux 10)_
 - ⚙️ [GNOME Configurations](tasks/gnome-configurations.md) &mdash; nice selection of GNOME extensions to use and enjoy.
@@ -24,5 +25,7 @@ Featured tasks:
 - 🔋 [Intel N100 low-power server](tasks/intel-n100-server.md) &mdash; BIOS settings, storage, Wi-Fi and power checks for a fanless mini PC. _(AlmaLinux 10)_
 - 📽️ [Kdenlive installation and usage](tasks/kdenlive.md) &mdash; video editing.
 - 💻️ [MacBook Air 2017](tasks/macbookakir2017.md) &mdash; Wi-Fi, webcam, colour profile, key mappings _(tested on Ubuntu 24.04 LTS)_
+- 📥 [Setup Dropbox](tasks/setup-dropbox.md) &mdash; headless Dropbox daemon, exclusions and LAN sync.
 - 👔 [Setup MATE and Classic Ubuntu theme](tasks/setup-mate-and-classic-ubuntu-theme.md) &mdash; retro comfy snappy vibes. _(tested on Ubuntu 26.04 LTS)_
 - 🐚 [Setup preferred shell](tasks/setup-preferred-shell.md) &mdash; configure ZSH with oh-my-zsh.
+- 🗂️ [Setup Samba](tasks/setup-samba.md) &mdash; host or connect to SMB shares, including SELinux steps for home folders and external drives.

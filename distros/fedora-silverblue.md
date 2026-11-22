@@ -71,6 +71,10 @@ Fedora silverblue specific:
 
 - During setup, do NOT enable third party repos, network/wifi, or NTP. Do NOT enable location services.
 
+### Time sync (NTS)
+
+Once set up and online, complete tasks as per [configure-nts-time-sync.md](../tasks/configure-nts-time-sync.md).
+
 
 ### zsh
 
@@ -91,11 +95,7 @@ Now reboot and consider this done
 
 ### Network shares
 
-For mounts, do not attempt to use the fstab method. fstab is writeable but you cannot chmod /bin/mount so that method doesnt work. Just run on commandline as sudo:
-
-```
-sudo mount -t cifs -o rw,credentials=/home/blair/TODO-PUT-HERE-credentials.txt,nounix,dir_mode=0777,file_mode=0777 //your-server/your-share /media/your-share # mount your-share
-```
+For mounts, do not attempt to use the fstab method. fstab is writeable but you cannot chmod /bin/mount so that method doesnt work. Mount from the command line instead, as per [setup-samba.md, option 1](../tasks/setup-samba.md#option-1-mount-from-the-command-line-any-distro).
 
 ### GNOME Settings
 

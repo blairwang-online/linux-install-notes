@@ -30,7 +30,7 @@ Which ISO:
 In the installer:
 
 - **Keyboard:** set the right layout. The LUKS passphrase prompt at boot uses it.
-- **Installation Destination:** tick only the disk you're installing to (not the USB stick, and not any other internal drive). Tick **Encrypt my data** (LUKS2). For a server, choose _Custom_, let the installer create the partitions automatically, then adjust: `/` about 100 GiB, swap about 4 GiB, and the rest as `/srv` rather than `/home`.
+- **Installation Destination:** tick only the disk you're installing to (not the USB stick, and not any other internal drive). Tick **Encrypt my data** (LUKS2). For a server, choose _Custom_, let the installer create the partitions automatically, then reduce swap to about 4 GiB.
     - Btrfs has been offered since AlmaLinux 10.1. It's an AlmaLinux addition rather than standard RHEL, so XFS on LVM is the safe default; Btrfs is worth it if you want snapshots.
 - **Network & Host Name:** set the permanent hostname now (Forgejo's URLs will use it), and connect Wi-Fi and/or Ethernet so the connection profiles are saved.
 - **Software Selection:** _Workstation_ for a workstation. _Server with GUI_ for a server or [hybrid](#workstationserver-hybrid-el10), adding _Headless Management_ (Cockpit) and _File and Storage Server_ (Samba) if they're offered.
@@ -90,6 +90,10 @@ Use this method of installing EPEL from the Fedora project rather than the one i
 
 NOTE: If you're told that the update(s) above have installed a new kernel, reboot now.
 
+## Time sync (NTS)
+
+- Complete tasks as per [configure-nts-time-sync.md](../tasks/configure-nts-time-sync.md)
+
 ## Setup dnf with CRB (workstation only)
 
 CRB is needed for the R programming language and probably some other useful stuff too...
@@ -135,196 +139,12 @@ Once set up, go to Cockpit:
 
 Get this started sooner rather than later, so that it can start fetching your files in the background.
 
-```zsh
-# Install
-cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-
-# Get Dropbox py
-mkdir -p ~/00blair/dropboxpy
-wget -O ~/00blair/dropboxpy/dropbox.py https://www.dropbox.com/download\?dl\=packages/dropbox.py
-chmod +x ~/00blair/dropboxpy/dropbox.py 
-
-# Run
-~/.dropbox-dist/dropboxd
-
-# Setup exclusions
-~/00blair/dropboxpy/dropbox.py exclude add ~/Dropbox/blair-extras2
-~/00blair/dropboxpy/dropbox.py exclude add ~/Dropbox/blair-extras3
-~/00blair/dropboxpy/dropbox.py exclude add ~/Dropbox/blair-extras4
-```
-
-You will need to configure firewall to enable LAN sync properly:
-
-```zsh
-# get zone name e.g. `public`, `FedoraServer`
-sudo firewall-cmd --get-active-zones
-
-# confirm that dropbox-lansync is available
-sudo firewall-cmd --get-services | grep dropbox
-
-# enable, zone=public
-sudo firewall-cmd --zone=public --add-service=dropbox-lansync --permanent
-
-# enable, zone=FedoraServer
-sudo firewall-cmd --zone=FedoraServer --add-service=dropbox-lansync --permanent
-
-# reload
-sudo firewall-cmd --reload
-```
-
-I use this version because it works across server and workstation environments, across desktop environments, with no dependency on package managers and so on.
+- Complete tasks as per [setup-dropbox.md](../tasks/setup-dropbox.md)
 
 
-## Samba (SMB) - server-side configuration (if this machine will host shares)
+## Samba (SMB)
 
-First, install the necessary packages:
-
-```zsh
-sudo dnf install samba samba-common samba-client
-```
-
-Next, setup your folder:
-
-```zsh
-mkdir /home/blair/mynetworkdrive
-```
-
-Then, configure the conf file (`/etc/samba/smb.conf`):
-
-```markdown
-[global]
-...
-
-# Force encryption as per https://serverfault.com/a/1088412
-server signing = mandatory
-server min protocol = SMB3
-server smb encrypt = required
-
-...
-
-[mynetworkdrive]
-path = /home/blair/mynetworkdrive
-writeable = Yes
-browseable = Yes
-public = no
-valid users = blair
-create mask = 0644
-directory mask = 0755
-write list = user
-```
-
-Remove the _force encryption_ part if you're setting up a server for clients that cannot support SMB encryption for some very special reasons.
-
-Next, go to Cockpit &rarr; Networking &rarr; Firewall &rarr; Add services (to the correct zone!) &rarr; Filter services to **samba**. Enable **samba** ("TCP: 139, 445; UDP: 138").
-
-Finally:
-
-```zsh
-
-# Setup account
-sudo smbpasswd -a blair
-
-# Set correct folder permissions
-sudo semanage fcontext -a -t public_content_t "/home/blair/mynetworkdrive(/.*)?"
-
-# Activate correct folder permissions
-sudo restorecon -R /home/blair/mynetworkdrive
-chcon -t samba_share_t /home/blair/mynetworkdrive -R
-
-sudo setsebool -P samba_domain_controller on
-sudo setsebool -P samba_enable_home_dirs on
-```
-
-Note: systemctl commands...
-
-```zsh
-sudo systemctl enable smb
-sudo systemctl restart smb
-sudo systemctl status smb
-```
-
-... See also https://docs.fedoraproject.org/en-US/quick-docs/samba/
-
-### EL10 server: shares under /srv
-
-On a dedicated server, I now keep shares under `/srv` instead of `/home`. That keeps the SELinux setup simple and keeps the data away from GNOME's file indexer. Not tested end-to-end yet.
-
-```zsh
-sudo dnf install -y samba samba-client policycoreutils-python-utils
-sudo mkdir -p /srv/samba/mynetworkdrive
-sudo chown blair: /srv/samba/mynetworkdrive
-sudo semanage fcontext -a -t samba_share_t "/srv/samba(/.*)?"
-sudo restorecon -Rv /srv/samba
-```
-
-Use the same `[global]` settings as above, with a share like this:
-
-```markdown
-[mynetworkdrive]
-path = /srv/samba/mynetworkdrive
-writeable = Yes
-browseable = Yes
-public = no
-valid users = blair
-create mask = 0644
-directory mask = 0755
-```
-
-Then:
-
-```zsh
-sudo smbpasswd -a blair
-sudo firewall-cmd --permanent --add-service=samba
-sudo firewall-cmd --reload
-sudo systemctl enable --now smb
-```
-
-The `samba_domain_controller` and `samba_enable_home_dirs` booleans from the section above aren't needed for shares under `/srv`.
-
-
-## Samba (SMB) - client-side configuration (if this machine will connect to shares)
-
-First, `mkdir /media/myshare1`, then:
-
-Add to `/etc/fstab`:
-
-```
-//myserver/myshare1 /media/myshare1 cifs credentials=/home/myusername/myshare-credentials.txt,noauto,user 0 0
-```
-
-(I found that I had to specify `/home/myusername/` instead of `~/`)
-
-Credentials file formatted like so:
-
-```
-username=blair
-password=mypasswordgoeshere
-```
-
-Then as per https://superuser.com/questions/1444883/user-cifs-mounts-not-supported-fedora-30, we need to set the suid bit:
-
-```zsh
-sudo chmod u+s /bin/mount
-sudo chmod u+s /bin/umount
-sudo chmod u+s /usr/sbin/mount.cifs
-```
-
-Then need to refresh systemd to use the updated fstab:
-
-```zsh
-sudo systemctl daemon-reload
-```
-
-Then can mount like:
-
-```zsh
-mount //myserver/myshare1
-```
-
-To check the properties of the Samba share, run `mount -t cifs`.
-
-
-
+- Complete tasks as per [setup-samba.md](../tasks/setup-samba.md), server side (if this machine will host shares) and/or client side (if this machine will connect to shares). It includes the SELinux steps for shares in your home folder or on external drives.
 
 ## Git / GitHub credentials saver
 
@@ -345,6 +165,14 @@ sudo snap install lolcat
 ```
 
 ## Install Flatpaks
+
+Make sure Flathub is set up:
+
+```zsh
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+Then complete tasks as per [install-flatpaks.md](../tasks/install-flatpaks.md). This is also how to install VSCodium (`com.vscodium.codium`).
 
 Download the flatpak file and then just double-click it, it will prompt you to install using a little GUI.
 
@@ -368,7 +196,6 @@ https://superuser.com/questions/93924/monaco-font-not-antialiased-in-some-gtk-ap
 - Brave: https://brave.com/linux/#fedora-rockyrhel
 - FSearch: https://copr.fedorainfracloud.org/coprs/cboxdoerfer/fsearch/
 - RStudio: https://posit.co/download/rstudio-desktop/
-- VSCodium: https://vscodium.com/#install-on-fedora-rhel-centos-rockylinux-opensuse-rpm-package
 
 
 ## Pasaffe
@@ -469,10 +296,6 @@ In `/etc/dnf/automatic.conf`, under `[commands]`, set `upgrade_type = security` 
 sudo systemctl enable --now dnf-automatic.timer
 ```
 
-### Keep shared data out of /home
-
-Put Samba shares and Forgejo data under `/srv` (see [shares under /srv](#el10-server-shares-under-srv) and [forgejo-podman.md](../tasks/forgejo-podman.md)). Besides keeping SELinux simple, this means GNOME's file indexer (localsearch) won't crawl them.
-
 ### LUKS: unlock with TPM + PIN, and back up the header
 
 Needs the firmware TPM switched on in the BIOS (Intel PTT or AMD fTPM). The passphrase set during install stays as a fallback. Not tested yet.
@@ -522,9 +345,9 @@ Switch back to `balanced` if anything (USB devices, for example) misbehaves.
 
 ## Ongoing Maintenance
 
-### Checking NTP
+### Checking time sync
 
-See https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/configuring-time-synchronization_configuring-basic-system-settings#using-chrony_configuring-time-synchronization
+See [Check that it works](../tasks/configure-nts-time-sync.md#check-that-it-works). For background on chrony in RHEL, see https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/configuring-time-synchronization_configuring-basic-system-settings#using-chrony_configuring-time-synchronization
 
 ### Using ddcutil for the equivalent of Mac's MonitorControl (set screen brightness)
 

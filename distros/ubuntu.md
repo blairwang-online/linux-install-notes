@@ -128,47 +128,9 @@ Search:
 
 - Turn off most items
 
-### NTP setup
+### Time sync (NTS)
 
-Before proceeding, first check if NTP is already set up, using:
-
-```bash
-timedatectl status
-```
-
-If it is already active then you do not need to do the below!
-
-Otherwise:
-
-```bash
-sudo nano /etc/systemd/timesyncd.conf
-```
-
-Set these if in **Australia**:
-
-```
-NTP=0.au.pool.ntp.org 1.au.pool.ntp.org 2.au.pool.ntp.org 3.au.pool.ntp.org
-FallbackNTP=0.pool.ntp.org 1.pool.ntp.org
-```
-
-Set these if in **Europe**:
-
-```
-NTP=0.europe.pool.ntp.org 1.europe.pool.ntp.org 2.europe.pool.ntp.org 3.europe.pool.ntp.org
-FallbackNTP=0.pool.ntp.org 1.pool.ntp.org
-```
-
-Then:
-
-```bash
-sudo systemctl daemon-reload
-sudo timedatectl set-ntp off
-sudo timedatectl set-ntp on
-
-timedatectl status
-```
-
-See https://askubuntu.com/a/1106011
+- Complete tasks as per [configure-nts-time-sync.md](../tasks/configure-nts-time-sync.md) (the steps differ between 24.04 and 26.04)
 
 
 ### Enable Cockpit
@@ -211,21 +173,9 @@ Afterwards:
 
 - Remember to set output canvas back up to 1920x1080
 
-### Samba (SMB) - client-side configuration (if this machine will connect to shares)
+### Samba (SMB)
 
-```
-sudo apt-get install cifs-utils
-sudo mkdir /media/myshare1
-sudo mkdir /media/myshare2
-
-sudo mount -t cifs -o rw,username=blair,nounix,dir_mode=0777,file_mode=0777 //server1/myshare1 /media/myshare1 # mount myshare1
-sudo mount -t cifs -o rw,username=blair,nounix,dir_mode=0777,file_mode=0777 //server1/myshare2 /media/myshare1 # mount myshare2
-
-sudo umount /media/myshare1
-sudo umount /media/myshare2
-```
-
-Some instructions use `/mnt/` instead of `/media/`. The main difference as far as I am concerned is that using `/media/` makes it appear as a removable drive in Nautilus file manager. For more information please refer to https://askubuntu.com/questions/22215/why-have-both-mnt-and-media
+- Complete tasks as per [setup-samba.md](../tasks/setup-samba.md), client side (if this machine will connect to shares) and/or server side (if this machine will host shares)
 
 
 ### Git / GitHub credentials saver
@@ -315,6 +265,7 @@ sudo npm install -g typescript
 
 ### VSCodium
 
+- Install it via Flatpak (`flatpak install flathub com.vscodium.codium`), as per [install-flatpaks.md](../tasks/install-flatpaks.md)
 - Complete tasks as per [configure-vsc.md](../tasks/configure-vsc.md)
 
 
@@ -387,7 +338,13 @@ Add `--ozone-platform=wayland` to the following:
 - `sudo nano /var/lib/snapd/desktop/applications/chromium_chromium.desktop` (use Ctrl+W and search for `Exec=`, could be around 4 instances!)
 - `sudo nano /var/lib/snapd/desktop/applications/spotify_spotify.desktop`
 - `sudo nano /usr/share/applications/ferdium.desktop`
-- `sudo nano /usr/share/applications/codium.desktop`
+
+VSCodium is a Flatpak, so there's no `/usr/share/applications/codium.desktop`. To test, run `flatpak run com.vscodium.codium --ozone-platform=wayland`. To make it stick, copy the Flatpak's launcher into your own folder, where it takes precedence over the system one, then add `--ozone-platform=wayland` right after `com.vscodium.codium` on each `Exec=` line (not tested yet):
+
+```bash
+cp /var/lib/flatpak/exports/share/applications/com.vscodium.codium.desktop ~/.local/share/applications/
+nano ~/.local/share/applications/com.vscodium.codium.desktop
+```
 
 NOTE: It might not work immediately. You might find that you need to launch the application, it is still blurry, then you close it (Alt+F4) and then launch it up again from the launcher, the second time around it should be nice and crispy!
 

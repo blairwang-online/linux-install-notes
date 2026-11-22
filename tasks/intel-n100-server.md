@@ -1,6 +1,6 @@
 # Intel N100 mini PC as a low-power server
 
-Notes for running a small, fanless Intel N100-class (or N150) mini PC as an always-on, low-power server, here with 8 GB of RAM, onboard eMMC plus an M.2 NVMe SSD, and USB-C Power Delivery input. The OS is AlmaLinux 10 set up as a [workstation/server hybrid](../distros/almalinux.md#workstationserver-hybrid-el10), serving Samba shares and [Forgejo](forgejo-podman.md). Most of this applies to similar mini PCs and other distros too. Not tested end-to-end yet.
+Notes for running a small, fanless Intel N100-class (or N150) mini PC as an always-on, low-power server, here with 8 GB of RAM, onboard eMMC plus an M.2 NVMe SSD, and USB-C Power Delivery input. The OS is AlmaLinux 10 set up as a [workstation/server hybrid](../distros/almalinux.md#workstationserver-hybrid-el10), serving [Samba shares](setup-samba.md) and [Forgejo](forgejo-podman.md). Most of this applies to similar mini PCs and other distros too. Not tested end-to-end yet.
 
 ## BIOS / UEFI settings
 
@@ -13,7 +13,7 @@ Notes for running a small, fanless Intel N100-class (or N150) mini PC as an alwa
 - Choose a **DRAM-less TLC** NVMe SSD. DRAM-less drives use a little system RAM for their tables (Host Memory Buffer, usually tens of MB, which is nothing on 8 GB) and run cooler and use less power. Avoid QLC drives where you can, and avoid PCIe Gen5 drives, which run hot.
 - Put a **thermal pad** between the SSD and the case lid. In a fanless box the case is the heatsink.
 - **Install to the NVMe drive only.** The installer also lists the eMMC (`mmcblk0`) and the USB stick; untick both. `lsblk` tells them apart: `nvme0n1` is the SSD.
-- **Use the eMMC as an on-box backup target** rather than leaving it idle: for example, LUKS + XFS mounted at `/backup`, with a nightly `restic` or `rsync` copy of `/srv`. It protects against the SSD failing, but not against losing the whole machine, so keep an off-box backup as well.
+- **Use the eMMC as an on-box backup target** rather than leaving it idle: for example, LUKS + XFS mounted at `/backup`, with a nightly `restic` or `rsync` copy of `/srv` (Forgejo's data) and wherever the Samba shares live. It protects against the SSD failing, but not against losing the whole machine, so keep an off-box backup as well.
 - Keep an eye on eMMC wear if it's written to regularly: `sudo mmc extcsd read /dev/mmcblk0 | grep -i life` (from `mmc-utils`).
 
 ## Living with 8 GB of RAM

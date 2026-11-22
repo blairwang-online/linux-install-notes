@@ -99,45 +99,7 @@ Follow the instructions at https://cockpit-project.org/running
 
 Get this started first so that it can start fetching your files in the background.
 
-For Workstation: Get the rpm from https://www.dropbox.com/install-linux
-
-For Server:
-
-```zsh
-# Install
-cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-
-# Get Dropbox py
-mkdir -p ~/00blair/dropboxpy
-wget -O ~/00blair/dropboxpy/dropbox.py https://www.dropbox.com/download\?dl\=packages/dropbox.py
-
-# Run
-~/.dropbox-dist/dropboxd
-
-# Setup exclusions
-~/00blair/dropboxpy/dropbox.py exclude add ~/Dropbox/blair-extras2
-~/00blair/dropboxpy/dropbox.py exclude add ~/Dropbox/blair-extras3
-~/00blair/dropboxpy/dropbox.py exclude add ~/Dropbox/blair-extras4
-```
-
-For both Workstation and Server, you will need to configure firewall to enable LAN sync properly:
-
-```zsh
-# get zone name e.g. `public`, `FedoraServer`
-sudo firewall-cmd --get-active-zones
-
-# confirm that dropbox-lansync is available
-sudo firewall-cmd --get-services | grep dropbox
-
-# enable, zone=public
-sudo firewall-cmd --zone=public --add-service=dropbox-lansync --permanent
-
-# enable, zone=FedoraServer
-sudo firewall-cmd --zone=FedoraServer --add-service=dropbox-lansync --permanent
-
-# reload
-sudo firewall-cmd --reload
-```
+- Complete tasks as per [setup-dropbox.md](../tasks/setup-dropbox.md)
 
 ### Git / GitHub credentials saver
 
@@ -253,44 +215,8 @@ Adapted from https://answers.launchpad.net/pasaffe/+question/658239
 10. If needed, symlink an existing psafe3 database to `~/.local/share/pasaffe/pasaffe.psafe3`
 
 ### Connect to a Samba (SMB) network share
-First, `mkdir /media/myshare1`, then:
 
-Add to `/etc/fstab`:
-
-```
-//myserver/myshare1 /media/myshare1 cifs credentials=/home/myusername/myshare-credentials.txt,noauto,user 0 0
-```
-
-(I found that I had to specify `/home/myusername/` instead of `~/`)
-
-Credentials file formatted like so:
-
-```
-username=blair
-password=mypasswordgoeshere
-```
-
-Then as per https://superuser.com/questions/1444883/user-cifs-mounts-not-supported-fedora-30, we need to set the suid bit:
-
-```zsh
-sudo chmod u+s /bin/mount
-sudo chmod u+s /bin/umount
-sudo chmod u+s /usr/sbin/mount.cifs
-```
-
-Then need to refresh systemd to use the updated fstab:
-
-```zsh
-sudo systemctl daemon-reload
-```
-
-Then can mount like:
-
-```zsh
-mount //myserver/myshare1
-```
-
-To check the properties of the Samba share, run `mount -t cifs`.
+- Complete tasks as per [setup-samba.md](../tasks/setup-samba.md#client-side-if-this-machine-will-connect-to-shares) (client side)
 
 ### Enable Swapfile and Hibernation
 

@@ -38,7 +38,7 @@ Archived because Flatpaks are available:
 - **Brave:** From "App Center" (snaps) (yes it is available as `.deb` as well, but let's keep it simple given how infrequently we use this)
 - **Ferdium (e.g., for WhatsApp):** Unfortunately the version from "App Center" (snaps) doesn't work; instead go to https://github.com/ferdium/ferdium-app/releases, download the `.deb` file, and install using `sudo dpkg -i`
 - **FSearch:** https://github.com/cboxdoerfer/fsearch?tab=readme-ov-file#download and follow
-- **VSCodium:** https://vscodium.com/#install-on-debian-ubuntu-deb-package
+- **VSCodium:** now installed via Flatpak only; see [install-flatpaks.md](../tasks/install-flatpaks.md)
 
 Archived because no longer required:
 
