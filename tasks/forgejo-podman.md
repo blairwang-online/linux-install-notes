@@ -120,6 +120,83 @@ Environment=FORGEJO__service__DISABLE_REGISTRATION=true
 
 Add `Environment=FORGEJO__service__REQUIRE_SIGNIN_VIEW=true` as well if public repositories shouldn't be visible to anyone on the LAN without signing in. Private repositories are hidden either way.
 
+## HTTPS with a self-signed certificate
+
+Forgejo can serve HTTPS itself, so no reverse proxy is needed. The steps below make Forgejo answer on `https://myserver.local/` (port 443), with plain HTTP on port 80 redirecting there. Browsers and Git will distrust the certificate until it has been added to each client's trust store, which is a one-off job per client. Not tested end-to-end yet.
+
+### 1. Generate the certificate
+
+The certificate only covers the names listed in `--host`, so list every name you'll use. `--duration` is in hours: 43800h is five years, so you aren't re-importing it on every client each year. (The 398-day maximum that browsers enforce applies to public certificate authorities, not to certificates you've trusted yourself.) Don't add `--ca`: Firefox refuses a CA certificate used directly as a server certificate.
+
+```zsh
+sudo podman exec -u git forgejo mkdir -p /data/gitea/https
+sudo podman exec -u git -w /data/gitea/https forgejo forgejo cert --host myserver.local,myserver --duration 43800h
+```
+
+This writes `cert.pem` and `key.pem` to `/srv/forgejo/gitea/https/` on the host. Running it again overwrites both.
+
+### 2. Change forgejo.container
+
+Replace the `PublishPort=3000:3000` line and the `DOMAIN` and `ROOT_URL` lines with the following, and keep everything else (including `PublishPort=222:22`):
+
+```ini
+PublishPort=443:3000
+PublishPort=80:3080
+Environment=FORGEJO__server__DOMAIN=myserver.local
+Environment=FORGEJO__server__ROOT_URL=https://myserver.local/
+Environment=FORGEJO__server__PROTOCOL=https
+Environment=FORGEJO__server__CERT_FILE=/data/gitea/https/cert.pem
+Environment=FORGEJO__server__KEY_FILE=/data/gitea/https/key.pem
+Environment=FORGEJO__server__REDIRECT_OTHER_PORT=true
+Environment=FORGEJO__server__PORT_TO_REDIRECT=3080
+```
+
+Inside the container, Forgejo still listens on 3000 (now HTTPS) and runs its HTTP-to-HTTPS redirect on 3080. The host maps them to the standard ports 443 and 80, so URLs don't need a port number. If you later want other web apps on port 443, move HTTPS to a reverse proxy instead.
+
+Restart, and swap the firewall ports:
+
+```zsh
+sudo systemctl daemon-reload
+sudo systemctl restart forgejo
+sudo firewall-cmd --permanent --add-service=https --add-service=http
+sudo firewall-cmd --permanent --remove-port=3000/tcp
+sudo firewall-cmd --reload
+```
+
+From another machine, `curl -kI https://myserver.local/` should get a response and `curl -I http://myserver.local/` should redirect to HTTPS. Also push something over SSH once, which exercises Forgejo's internal hooks under the new settings. On existing clones, point the remote at the new address with `git remote set-url origin https://myserver.local/<owner>/<repo>.git`.
+
+### 3. Trust the certificate on each client
+
+Copy only `cert.pem` to each client, never `key.pem`:
+
+```zsh
+scp myserver.local:/srv/forgejo/gitea/https/cert.pem myserver.pem
+```
+
+- **AlmaLinux / Fedora:** `sudo cp myserver.pem /etc/pki/ca-trust/source/anchors/ && sudo update-ca-trust`
+- **Debian / Ubuntu:** `sudo cp myserver.pem /usr/local/share/ca-certificates/myserver.crt && sudo update-ca-certificates` (the `.crt` extension is required)
+- **Windows:** rename it to `myserver.crt`, then in an administrator terminal run `certutil -addstore -f Root myserver.crt` (or double-click it, choose _Install Certificate_, and put it in _Trusted Root Certification Authorities_). Git for Windows uses the Windows certificate store by default, so nothing else is needed for Git.
+- **macOS:** `sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain myserver.pem`
+- **Firefox on Linux** keeps its own list: Settings &rarr; Privacy & Security &rarr; Certificates &rarr; View Certificates &rarr; Authorities &rarr; Import.
+
+To trust it for Git only, for this server only, without touching the system store:
+
+```zsh
+git config --global http.https://myserver.local/.sslCAInfo ~/certs/myserver.pem
+```
+
+Don't set `http.sslVerify false` instead; that turns off checking for every server.
+
+### Renewing
+
+Check when it expires:
+
+```zsh
+openssl x509 -enddate -noout -in /srv/forgejo/gitea/https/cert.pem
+```
+
+To renew, repeat step 1, restart Forgejo (`sudo systemctl restart forgejo`), and import the new `cert.pem` on each client. If re-importing ever gets tedious, a reverse proxy such as Caddy with `tls internal` runs its own small certificate authority, which clients trust once while server certificates renew automatically, at the cost of another moving part.
+
 ## Updates
 
 `AutoUpdate=registry` lets Podman pull newer 15.x images. Turn on the timer that does it:
