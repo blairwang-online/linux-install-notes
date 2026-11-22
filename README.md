@@ -16,7 +16,7 @@ Featured tasks:
 - 🎵 [Airplay for music](tasks/airplay.md) _(tested on Ubuntu 26.04 LTS)_
 - 🦙 [Alpaca](tasks/alpaca.md) &mdash; offline generative AI.
 - ☂️ [Configure VSC](tasks/configure-vsc.md) &mdash; recommended settings for Visual Studio Code or VSCodium.
-- 🔨 [Forgejo in Podman](tasks/forgejo-podman.md) &mdash; self-hosted Git forge as a Podman Quadlet, with optional self-signed HTTPS. _(AlmaLinux 10)_
+- 🔨 [Forgejo in Podman](tasks/forgejo-podman.md) &mdash; self-hosted Git forge as a Podman Quadlet, HTTPS-only from the start with a self-signed certificate. _(AlmaLinux 10)_
 - ⚙️ [GNOME Configurations](tasks/gnome-configurations.md) &mdash; nice selection of GNOME extensions to use and enjoy.
 - 🧩 [GNOME Extensions](tasks/gnome-extensions.md) &mdash; turn off 'ClearType'-style font-rendering, change UI fonts, etc.
 - 🧰 [Git and GitHub configuration](tasks/git-and-github-configuration.md) &mdash; save credentials, setup LFS
