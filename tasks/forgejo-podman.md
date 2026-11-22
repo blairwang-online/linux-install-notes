@@ -2,7 +2,7 @@
 
 Self-hosted Git forge on AlmaLinux 10, run as a rootful Podman Quadlet so systemd starts it at boot, and served over HTTPS from the very first start with a self-signed certificate. Adapted from the Podman Quadlet example in https://forgejo.org/docs/latest/admin/installation-docker/ (tested by Forgejo on AlmaLinux 9.4 with Podman 5.2). Not tested end-to-end here yet.
 
-The order matters: set up the hostname, create the certificate, start Forgejo with HTTPS already on, trust the certificate on your own machine, and only then open the setup page. Forgejo never serves pages over plain HTTP; port 80 only redirects to HTTPS.
+The order matters: set up the hostname, create the certificate, start Forgejo with HTTPS already on, trust the certificate on your own machine, and only then open the setup page. Forgejo serves HTTPS only, on port 3000, and never uses ports 80 or 443, so those stay free for other applications on the same machine.
 
 ## Which version
 
@@ -66,8 +66,7 @@ ContainerName=forgejo
 Image=codeberg.org/forgejo/forgejo:15
 AutoUpdate=registry
 Network=forgejo.network
-PublishPort=443:3000
-PublishPort=80:3080
+PublishPort=3000:3000
 PublishPort=222:22
 Volume=/srv/forgejo:/data:Z
 Environment=USER_UID=1000
@@ -75,10 +74,8 @@ Environment=USER_GID=1000
 Environment=FORGEJO__server__PROTOCOL=https
 Environment=FORGEJO__server__CERT_FILE=/data/gitea/https/cert.pem
 Environment=FORGEJO__server__KEY_FILE=/data/gitea/https/key.pem
-Environment=FORGEJO__server__REDIRECT_OTHER_PORT=true
-Environment=FORGEJO__server__PORT_TO_REDIRECT=3080
 Environment=FORGEJO__server__DOMAIN=myserver.local
-Environment=FORGEJO__server__ROOT_URL=https://myserver.local/
+Environment=FORGEJO__server__ROOT_URL=https://myserver.local:3000/
 Environment=FORGEJO__server__SSH_PORT=222
 Environment=FORGEJO__session__COOKIE_SECURE=true
 Environment=FORGEJO__security__REVERSE_PROXY_TRUSTED_PROXIES=127.0.0.0/8,::1/128
@@ -92,28 +89,27 @@ WantedBy=default.target
 
 Notes on these settings:
 
-- Inside the container, Forgejo serves HTTPS only on port 3000 (`PROTOCOL=https`) and runs an HTTP-to-HTTPS redirect on 3080. The host maps them to the standard ports 443 and 80, so URLs don't need a port number. If you'd rather not answer on port 80 at all, leave out `PublishPort=80:3080` and the two `REDIRECT` lines, and don't open `http` in the firewall in step 4.
+- Forgejo serves HTTPS only (`PROTOCOL=https`) on port 3000, so its address is `https://myserver.local:3000/`. Ports 80 and 443 stay free for other applications. There's no HTTP-to-HTTPS redirect: Forgejo can only offer one on a separate port, and that's only useful on port 80. Typing `http://myserver.local:3000/` gets an error page saying the client sent an HTTP request to an HTTPS server; use `https://`.
 - `COOKIE_SECURE=true` makes browsers send the sign-in cookie over HTTPS only.
 - Port 222 is for Git over SSH, leaving 22 for the host's own SSH. `SSH_PORT=222` makes Forgejo show `:222` in its clone URLs; inside the container, SSH still listens on 22.
 - `/srv/forgejo` holds everything: repositories, the SQLite database, `gitea/conf/app.ini`, and the certificate and its private key. `:Z` gives it the SELinux label the container needs. Don't use `:Z` on system folders or anything under `/home`.
 - `FORGEJO__section__KEY` variables are written into `app.ini` each time the container starts. They can add or change settings but not remove them; edit `app.ini` for that.
-- If you later want other web apps on port 443, move HTTPS to a reverse proxy.
+- If a reverse proxy later takes ports 80 and 443 for several applications, Forgejo can sit behind it: point the proxy at `https://127.0.0.1:3000` and change `ROOT_URL` to the proxy's address.
 
 ## 4. Start Forgejo and open the firewall
 
 ```zsh
 sudo systemctl daemon-reload
 sudo systemctl start forgejo
-sudo firewall-cmd --permanent --add-service=https --add-service=http
-sudo firewall-cmd --permanent --add-port=222/tcp
+sudo firewall-cmd --permanent --add-port=3000/tcp --add-port=222/tcp
 sudo firewall-cmd --reload
 ```
 
-`firewall-cmd` refuses to mix `--add-service` and `--add-port` in one command (`argument --add-port: not allowed with argument --add-service`), hence two commands.
+`firewall-cmd` refuses to mix `--add-service` and `--add-port` in one command (`argument --add-port: not allowed with argument --add-service`), so if you add services at the same time, use a separate command for them.
 
 Don't run `systemctl enable forgejo`. Quadlet generates the service, and the `[Install]` section is what starts it at boot; `enable` fails on a generated unit.
 
-From another machine (the server itself may not resolve its own `.local` name), check that `curl -kI https://myserver.local/` gets a response. Port 80 won't answer yet: Forgejo only starts its HTTP-to-HTTPS redirect once the setup page (step 6) has been completed, so that check comes at the end of step 6. Don't open the setup page yet.
+From another machine (the server itself may not resolve its own `.local` name), check that `curl -kI https://myserver.local:3000/` gets a response. Don't open the setup page yet.
 
 ## 5. Trust the certificate on your clients
 
@@ -132,14 +128,14 @@ scp myserver.local:/srv/forgejo/gitea/https/cert.pem myserver.pem
 To trust it for Git only, for this server only, without touching the system store:
 
 ```zsh
-git config --global http.https://myserver.local/.sslCAInfo ~/certs/myserver.pem
+git config --global http.https://myserver.local:3000/.sslCAInfo ~/certs/myserver.pem
 ```
 
-Don't set `http.sslVerify false` instead; that turns off checking for every server.
+The port has to be in that setting, because Git matches it exactly. Don't set `http.sslVerify false` instead; that turns off checking for every server.
 
 ## 6. Finish setup in the browser
 
-Go to `https://myserver.local/` and finish setup straight away: until it's done, anyone who can reach the server can complete it. The server and URL fields are already filled in from `forgejo.container`; leave them as they are. SQLite (the default) is fine for a small personal server. Create the admin account there.
+Go to `https://myserver.local:3000/` and finish setup straight away: until it's done, anyone who can reach the server can complete it. The server and URL fields are already filled in from `forgejo.container`; leave them as they are. SQLite (the default) is fine for a small personal server. Create the admin account there.
 
 Because the whole LAN can reach Forgejo, then turn off self-registration by adding this to `[Container]` in `forgejo.container`:
 
@@ -159,22 +155,20 @@ Once your SSH key is added in Forgejo, test both ways in:
 
 ```zsh
 ssh -F /dev/null -p 222 git@myserver.local
-git clone https://myserver.local/<owner>/<repo>.git
+git clone https://myserver.local:3000/<owner>/<repo>.git
 ```
 
 Push something over SSH once as well, which exercises Forgejo's internal hooks.
 
-Finally, check the HTTP-to-HTTPS redirect, which Forgejo starts only now that setup is complete. From another machine, `curl -I http://myserver.local/` should answer with a redirect to `https://myserver.local/`. If it doesn't, see [Troubleshooting](#troubleshooting).
-
 ## Who can connect
 
-Nothing in `forgejo.container` limits who can connect. `PublishPort` listens on all of the host's network interfaces and the firewall ports are open, so any machine on the LAN can reach Forgejo. To limit the web interface to this machine instead, use `PublishPort=127.0.0.1:443:3000`. `DOMAIN`, `ROOT_URL` and `REVERSE_PROXY_TRUSTED_PROXIES` don't control access either (see above).
+Nothing in `forgejo.container` limits who can connect. `PublishPort` listens on all of the host's network interfaces and the firewall ports are open, so any machine on the LAN can reach Forgejo. To limit the web interface to this machine instead, use `PublishPort=127.0.0.1:3000:3000`. `DOMAIN`, `ROOT_URL` and `REVERSE_PROXY_TRUSTED_PROXIES` don't control access either (see above).
 
 ## Changing the address later
 
 1. Generate a new certificate for the new names, overwriting the old one (Forgejo can stay running): `sudo podman exec -u git -w /data/gitea/https forgejo forgejo cert --host <new names> --duration 43800h`
 2. Update `DOMAIN` and `ROOT_URL` in `forgejo.container`, then `sudo systemctl daemon-reload` and `sudo systemctl restart forgejo`.
-3. Import the new `cert.pem` on each client, and point existing clones at the new address: `git remote set-url origin https://<new address>/<owner>/<repo>.git`
+3. Import the new `cert.pem` on each client, and point existing clones at the new address: `git remote set-url origin https://<new address>:3000/<owner>/<repo>.git`
 
 ## Renewing the certificate
 
@@ -210,14 +204,5 @@ sudo systemctl start forgejo
 
 - Logs: `sudo journalctl -u forgejo` or `sudo podman logs forgejo`.
 - If the container can't write to `/srv/forgejo`, check for SELinux denials: `sudo ausearch -m avc -ts recent`.
-- **`http://` doesn't redirect** (HTTPS works, but port 80 refuses connections). Forgejo's links, clone URLs and Git all use HTTPS, so this only affects people typing `http://`. On the server, check in order:
-    1. Has the setup page been completed? Forgejo doesn't start the redirect while it's serving the setup page (its install mode starts the web server with the redirect turned off). If setup is done and the redirect still isn't there, run `sudo systemctl restart forgejo` once.
-    2. `sudo firewall-cmd --list-services` includes `http`.
-    3. `sudo podman port forgejo` lists `3080/tcp -> 0.0.0.0:80`.
-    4. `sudo grep -E '^(PROTOCOL|REDIRECT_OTHER_PORT|PORT_TO_REDIRECT)' /srv/forgejo/gitea/conf/app.ini` shows `https`, `true` and `3080`. The redirect only runs when `PROTOCOL` is `https`.
-    5. `sudo podman exec forgejo netstat -tln` shows something listening on `:3080`.
-    6. `curl -I http://localhost/` on the server redirects. If it does but other machines can't connect, the firewall is the problem.
-
-    Or do without port 80: remove `PublishPort=80:3080` and the two `REDIRECT` lines from `forgejo.container`, run `sudo firewall-cmd --permanent --remove-service=http` and `sudo firewall-cmd --reload`, then `sudo systemctl daemon-reload` and `sudo systemctl restart forgejo`.
 - If step 2 fails with an error about `forgejo` not being found, use `--entrypoint /app/gitea/gitea` instead (the binary's location in the image).
 - Cockpit's _Podman containers_ page (`cockpit-podman`) shows the container and its logs.
