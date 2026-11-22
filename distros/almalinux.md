@@ -10,11 +10,32 @@ AlmaLinux is now the de facto stable downstream distro based on Fedora, or at le
 
 Since this document is mostly for my own records, unless you are me, not everything below is certainly relevant for you. But maybe some of it is / maybe this might help someone else trying to get something working? 😊
 
+These notes started out on AlmaLinux 9. Sections and notes marked **EL10** are for AlmaLinux 10, which is what I now use for new installs, including a [workstation/server hybrid](#workstationserver-hybrid-el10) setup. The EL10 material was drafted with AI assistance and hasn't all been tested end-to-end yet, so treat it with care.
+
 ## Install AlmaLinux
 
 - Complete tasks as per [install-to-bare-metal.md](../tasks/install-to-bare-metal.md)
 - Complete tasks as per [setup-preferred-shell.md](../tasks/setup-preferred-shell.md)
 - Complete tasks as per [gnome-configurations.md](../tasks/gnome-configurations.md)
+
+### Installing AlmaLinux 10 (EL10)
+
+Which ISO:
+
+- Use the **DVD** ISO (about 9 GB, fine on a 32 GB USB stick). It installs offline and offers every environment, including **Server with GUI**, plus LUKS encryption in the installer.
+    - _Boot_ is the same installer but downloads packages, so it needs a working network during the install. _Minimal_ has no GUI. _Live GNOME_ copies a desktop image onto the disk, with little control over what gets installed.
+- Use the standard `x86_64` ISO if the CPU supports x86-64-v3 (roughly: AVX2, so Intel Haswell or later, including Intel N100/N150). For older CPUs, use AlmaLinux's `x86_64_v2` build.
+- Check the SHA-256, then write the ISO with `dd` or Fedora Media Writer.
+
+In the installer:
+
+- **Keyboard:** set the right layout. The LUKS passphrase prompt at boot uses it.
+- **Installation Destination:** tick only the disk you're installing to (not the USB stick, and not any other internal drive). Tick **Encrypt my data** (LUKS2). For a server, choose _Custom_, let the installer create the partitions automatically, then adjust: `/` about 100 GiB, swap about 4 GiB, and the rest as `/srv` rather than `/home`.
+    - Btrfs has been offered since AlmaLinux 10.1. It's an AlmaLinux addition rather than standard RHEL, so XFS on LVM is the safe default; Btrfs is worth it if you want snapshots.
+- **Network & Host Name:** set the permanent hostname now (Forgejo's URLs will use it), and connect Wi-Fi and/or Ethernet so the connection profiles are saved.
+- **Software Selection:** _Workstation_ for a workstation. _Server with GUI_ for a server or [hybrid](#workstationserver-hybrid-el10), adding _Headless Management_ (Cockpit) and _File and Storage Server_ (Samba) if they're offered.
+- **KDUMP:** turn it off on machines with little RAM, since it reserves memory for crash dumps.
+- **User:** create your user and tick _Make this user administrator_. Leave root locked.
 
 ## Update everything
 
@@ -73,6 +94,8 @@ NOTE: If you're told that the update(s) above have installed a new kernel, reboo
 
 CRB is needed for the R programming language and probably some other useful stuff too...
 
+**EL10:** enable CRB on servers too (the first two commands below, not `R`), since many EPEL 10 packages depend on it.
+
 ```zsh
 sudo dnf config-manager --set-enabled crb
 sudo dnf makecache --refresh
@@ -106,6 +129,7 @@ Once set up, go to Cockpit:
 - Then logout, log back in
 - Overview &rarr; View metrics and history &rarr; **Metrics settings** and enable **Collect metrics** but maybe not Export to network (!).
 - Applications &rarr; Machines &rarr; Install
+    - **EL10 server:** skip Machines on a low-RAM machine. Install _Podman containers_ (`cockpit-podman`) instead, which is handy for [Forgejo](../tasks/forgejo-podman.md).
 
 ## Setup Dropbox
 
@@ -221,6 +245,42 @@ sudo systemctl status smb
 
 ... See also https://docs.fedoraproject.org/en-US/quick-docs/samba/
 
+### EL10 server: shares under /srv
+
+On a dedicated server, I now keep shares under `/srv` instead of `/home`. That keeps the SELinux setup simple and keeps the data away from GNOME's file indexer. Not tested end-to-end yet.
+
+```zsh
+sudo dnf install -y samba samba-client policycoreutils-python-utils
+sudo mkdir -p /srv/samba/mynetworkdrive
+sudo chown blair: /srv/samba/mynetworkdrive
+sudo semanage fcontext -a -t samba_share_t "/srv/samba(/.*)?"
+sudo restorecon -Rv /srv/samba
+```
+
+Use the same `[global]` settings as above, with a share like this:
+
+```markdown
+[mynetworkdrive]
+path = /srv/samba/mynetworkdrive
+writeable = Yes
+browseable = Yes
+public = no
+valid users = blair
+create mask = 0644
+directory mask = 0755
+```
+
+Then:
+
+```zsh
+sudo smbpasswd -a blair
+sudo firewall-cmd --permanent --add-service=samba
+sudo firewall-cmd --reload
+sudo systemctl enable --now smb
+```
+
+The `samba_domain_controller` and `samba_enable_home_dirs` booleans from the section above aren't needed for shares under `/srv`.
+
 
 ## Samba (SMB) - client-side configuration (if this machine will connect to shares)
 
@@ -315,6 +375,8 @@ https://superuser.com/questions/93924/monaco-font-not-antialiased-in-some-gtk-ap
 
 PATH needs to include `/home/blair/.local/bin` but otherwise confirmed working! pasaffe-0.58-1 on AlmaLinux 9.3 (python --version == Python 3.9.18).
 
+**EL10:** ships Python 3.12. Not tried there yet.
+
 Adapted from https://answers.launchpad.net/pasaffe/+question/658239
 
 1. Download latest tar.gz from https://launchpad.net/pasaffe
@@ -363,6 +425,100 @@ blair@fedoraworkstation ~
 ❯ sudo -u gdm dbus-launch gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type
 'nothing'
 ```
+
+**EL10:** X11 is gone, so `dbus-x11` isn't the answer there. On an always-on machine, mask the sleep targets instead, as in [Never suspend](#never-suspend) below.
+
+## Workstation/server hybrid (EL10)
+
+For an always-on machine that is mainly a server (Samba, Forgejo) but keeps GNOME for the odd time a display is plugged in. Install with **Server with GUI** (see [Installing AlmaLinux 10](#installing-almalinux-10-el10)). For an Intel N100-class mini PC, also complete tasks as per [intel-n100-server.md](../tasks/intel-n100-server.md).
+
+### Desktop choice on EL10
+
+RHEL 10, and so AlmaLinux 10, is Wayland-only and has dropped the X11 server. GNOME is the default and KDE Plasma is in EPEL. As of late 2026, Xfce and MATE aren't in EPEL 10 and only exist in unofficial COPR repositories, which I'd avoid on a server.
+
+### Boot to the console, start GNOME only when needed
+
+An installed desktop costs nothing but disk space until it runs.
+
+```zsh
+sudo systemctl set-default multi-user.target
+```
+
+When a display is plugged in, log in on the console and run `sudo systemctl start gdm`. To go back to booting straight into GNOME: `sudo systemctl set-default graphical.target`.
+
+### Never suspend
+
+```zsh
+sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+```
+
+This stops GNOME and GDM from suspending the machine, whatever their own settings say.
+
+### Updates: no PackageKit, security updates via dnf-automatic
+
+Mask PackageKit so GNOME Software doesn't check for and download updates in the background (GNOME Software can't install anything while it's masked), and let `dnf-automatic` apply security updates:
+
+```zsh
+sudo systemctl mask packagekit.service
+sudo dnf install -y dnf-automatic
+```
+
+In `/etc/dnf/automatic.conf`, under `[commands]`, set `upgrade_type = security` and `apply_updates = yes`. Then:
+
+```zsh
+sudo systemctl enable --now dnf-automatic.timer
+```
+
+### Keep shared data out of /home
+
+Put Samba shares and Forgejo data under `/srv` (see [shares under /srv](#el10-server-shares-under-srv) and [forgejo-podman.md](../tasks/forgejo-podman.md)). Besides keeping SELinux simple, this means GNOME's file indexer (localsearch) won't crawl them.
+
+### LUKS: unlock with TPM + PIN, and back up the header
+
+Needs the firmware TPM switched on in the BIOS (Intel PTT or AMD fTPM). The passphrase set during install stays as a fallback. Not tested yet.
+
+```zsh
+# Find the LUKS partition (FSTYPE crypto_LUKS)
+lsblk -f
+
+# Enrol the TPM with a PIN (replace the device with yours)
+sudo systemd-cryptenroll --tpm2-device=auto --tpm2-with-pin=yes /dev/nvme0n1p3
+```
+
+Then add `tpm2-device=auto` to that device's options in `/etc/crypttab` (the fourth field, comma-separated; if it says `none`, replace it), rebuild the initramfs with `sudo dracut -f`, and reboot. It should now ask for the PIN rather than the passphrase.
+
+BIOS or firmware updates, or Secure Boot changes, can stop the TPM unlocking. If that happens, enter the passphrase, then re-enrol:
+
+```zsh
+sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-with-pin=yes /dev/nvme0n1p3
+```
+
+Back up the LUKS header, and keep the file somewhere other than this machine:
+
+```zsh
+sudo cryptsetup luksHeaderBackup /dev/nvme0n1p3 --header-backup-file ~/luks-header-$(hostname).img
+```
+
+### SSD TRIM
+
+```zsh
+sudo systemctl enable --now fstrim.timer
+```
+
+For TRIM to reach the SSD through LUKS, the device's options in `/etc/crypttab` need to include `discard` (then `sudo dracut -f`). The trade-off is that it reveals which blocks are unused, which I'm happy to accept.
+
+### Power profile
+
+```zsh
+sudo tuned-adm profile powersave
+tuned-adm active
+```
+
+Switch back to `balanced` if anything (USB devices, for example) misbehaves.
+
+### Forgejo
+
+- Complete tasks as per [forgejo-podman.md](../tasks/forgejo-podman.md)
 
 ## Ongoing Maintenance
 
