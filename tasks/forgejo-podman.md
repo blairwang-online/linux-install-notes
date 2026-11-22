@@ -2,7 +2,7 @@
 
 Self-hosted Git forge on AlmaLinux 10, run as a rootful Podman Quadlet so systemd starts it at boot, and served over HTTPS from the very first start with a self-signed certificate. Adapted from the Podman Quadlet example in https://forgejo.org/docs/latest/admin/installation-docker/ (tested by Forgejo on AlmaLinux 9.4 with Podman 5.2). Not tested end-to-end here yet.
 
-The order matters: choose the address, create the certificate, start Forgejo with HTTPS already on, trust the certificate on your own machine, and only then open the setup page. Forgejo never serves pages over plain HTTP; port 80 only redirects to HTTPS.
+The order matters: set up the hostname, create the certificate, start Forgejo with HTTPS already on, trust the certificate on your own machine, and only then open the setup page. Forgejo never serves pages over plain HTTP; port 80 only redirects to HTTPS.
 
 ## Which version
 
@@ -10,22 +10,20 @@ Use the LTS tag. Forgejo 15 is the current LTS, supported until 15 July 2027, an
 
 Forgejo 15's container images trust reverse-proxy headers from anywhere by default (`REVERSE_PROXY_TRUSTED_PROXIES = *`; changed in 16, but not in the 15 LTS). That only matters behind a reverse proxy, but the configuration below narrows it to localhost anyway. It controls which addresses Forgejo trusts to pass on headers such as `X-Forwarded-For`, not who can connect, so don't widen it to the LAN.
 
-## 1. Choose the address
+## 1. Set up the hostname
 
-`DOMAIN` and `ROOT_URL` decide the links Forgejo generates: clone URLs, redirects after sign-in, and links in emails and webhooks. Forgejo answers on any address, but if you browse by an address other than `ROOT_URL`, it shows a warning banner and some links point to the `ROOT_URL` address. The certificate will also only be valid for the names it was made for. So decide now:
+`DOMAIN` and `ROOT_URL` decide the links Forgejo generates: clone URLs, redirects after sign-in, and links in emails and webhooks. Forgejo answers on any address, but if you browse by an address other than `ROOT_URL`, it shows a warning banner and some links point to the `ROOT_URL` address. The certificate will also only be valid for the names it was made for. So settle on a hostname that every network you use can resolve before going further.
 
-- **A hostname every network can resolve.** This is the better option, especially for a machine that moves between networks. With mDNS, `myserver.local` works on most LANs without any router changes:
+With mDNS, `myserver.local` works on most LANs without any router changes, which suits a machine that moves between networks:
 
-    ```zsh
-    sudo dnf install -y avahi
-    sudo systemctl enable --now avahi-daemon
-    sudo firewall-cmd --permanent --add-service=mdns
-    sudo firewall-cmd --reload
-    ```
+```zsh
+sudo dnf install -y avahi
+sudo systemctl enable --now avahi-daemon
+sudo firewall-cmd --permanent --add-service=mdns
+sudo firewall-cmd --reload
+```
 
-    Recent Windows, macOS and most Linux desktops resolve `.local` names. A VPN address that doesn't change (WireGuard, Tailscale) works the same way.
-
-- **A fixed IP address**, set by a DHCP reservation or a static address. Put it in `--host` in step 2 and in `DOMAIN` and `ROOT_URL` in step 3, in place of the hostname. On a machine that moves between networks, the address usually differs on each one, so links will be wrong somewhere.
+Recent Windows, macOS and most Linux desktops resolve `.local` names. A VPN name that doesn't change (WireGuard, Tailscale) works the same way.
 
 The rest of this page uses `myserver.local` (and `myserver` as a second name in the certificate). Replace them throughout.
 
@@ -43,7 +41,7 @@ ls -l /srv/forgejo/gitea/https
 
 The last command should list `cert.pem` and `key.pem`.
 
-- `--host` takes a comma-separated list of every name (and fixed IP address) you'll use. Browsers reject the certificate for any address not on that list.
+- `--host` takes a comma-separated list of every name you'll use. Browsers reject the certificate for any address not on that list.
 - `--duration` is in hours: 43800h is five years, so you aren't re-importing it on every client each year. The 398-day maximum that browsers enforce applies to public certificate authorities, not to certificates you've trusted yourself.
 - Don't add `--ca`: Firefox refuses a CA certificate used directly as a server certificate.
 - UID 1000 is the `git` user inside the container, matching `USER_UID` in step 3. On the host, it's normally the first user created at install.
@@ -106,9 +104,12 @@ Notes on these settings:
 ```zsh
 sudo systemctl daemon-reload
 sudo systemctl start forgejo
-sudo firewall-cmd --permanent --add-service=https --add-service=http --add-port=222/tcp
+sudo firewall-cmd --permanent --add-service=https --add-service=http
+sudo firewall-cmd --permanent --add-port=222/tcp
 sudo firewall-cmd --reload
 ```
+
+`firewall-cmd` refuses to mix `--add-service` and `--add-port` in one command (`argument --add-port: not allowed with argument --add-service`), hence two commands.
 
 Don't run `systemctl enable forgejo`. Quadlet generates the service, and the `[Install]` section is what starts it at boot; `enable` fails on a generated unit.
 
